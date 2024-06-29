@@ -75,7 +75,6 @@
   # networking
   networking = {
       hostName = "nixos";
-      wireless.enable = true;
       networkmanager.enable = true;
   };
 
@@ -146,6 +145,7 @@
      wget
      curl
      xclip
+     home-manager
   ];
 
    programs.nix-ld.enable = true;
