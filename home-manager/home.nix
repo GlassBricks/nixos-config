@@ -102,12 +102,12 @@
         };
    };
    home.sessionPath = [
-      "$HOME/.bin"
+      "$HOME/bin"
    ];
 
-   # symlink ~/nix-config/rebuild.sh to ~/.bin/rebuild
     home.file = {
-        ".bin/rebuild" = {
+        # not nixos rebuild!!
+        "bin/nixos-update" = {
             enable = true;
             source = ../rebuild.sh;
         };
