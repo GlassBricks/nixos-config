@@ -9,6 +9,7 @@
   imports = [
     ./fonts.nix
     ./shell.nix
+    ./programs.nix
   ];
 
   nixpkgs = {
@@ -73,20 +74,7 @@
     jetbrains-toolbox
   ];
 
-  programs.git = {
-    enable = true;
-    userName = "GlassBricks";
-    userEmail = "24237065+GlassBricks@users.noreply.github.com";
-  };
-
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-  };
-
-  programs.java.enable = true;
-
-  # Enable home-manager and git
+  # let home manager mange itself
   programs.home-manager.enable = true;
 
   # Nicely reload system units when changing configs
