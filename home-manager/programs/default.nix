@@ -1,6 +1,6 @@
 # Misc programs
 # If any config becomes large enough it may move to its own file
-{...}: {
+{pkgs, ...}: {
   programs.git = {
     enable = true;
     userName = "GlassBricks";
@@ -11,4 +11,35 @@
     defaultEditor = true;
   };
   programs.java.enable = true;
+
+  home.packages = with pkgs; [
+    neofetch
+
+    # utils
+    jq # A lightweight and flexible command-line JSON processor
+    eza # A modern replacement for ‘ls’
+    xsel
+    nix-tree
+    ripgrep
+
+    alejandra
+
+    # misc
+    file
+    which
+    tree
+    gnutar
+
+    btop # replacement of htop/nmon
+
+    # user programs
+    gparted
+
+    discord
+    spotify
+
+    kdePackages.merkuro
+
+    jetbrains-toolbox
+  ];
 }

@@ -42,37 +42,6 @@
     homeDirectory = "/home/ben";
   };
 
-  home.packages = with pkgs; [
-    neofetch
-
-    # utils
-    jq # A lightweight and flexible command-line JSON processor
-    eza # A modern replacement for ‘ls’
-    xsel
-    nix-tree
-    ripgrep
-
-    alejandra
-
-    # misc
-    file
-    which
-    tree
-    gnutar
-
-    btop # replacement of htop/nmon
-
-    # user programs
-    gparted
-
-    discord
-    spotify
-
-    kdePackages.merkuro
-
-    jetbrains-toolbox
-  ];
-
   # let home manager mange itself
   programs.home-manager.enable = true;
 
