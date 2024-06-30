@@ -53,11 +53,12 @@
         neofetch
 
         # utils
-        ripgrep # recursively searches directories for a regex pattern
         jq # A lightweight and flexible command-line JSON processor
         eza # A modern replacement for ‘ls’
-        fzf # A command-line fuzzy finder
         xsel
+
+        alejandra
+
 
         # misc
         file
@@ -106,8 +107,7 @@
    ];
 
     home.file = {
-        # not nixos rebuild!!
-        "bin/nixos-update" = {
+        "bin/my-nixos-rebuild" = {
             enable = true;
             source = ../rebuild.sh;
         };
