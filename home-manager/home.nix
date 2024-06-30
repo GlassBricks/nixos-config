@@ -9,7 +9,7 @@
   imports = [
     ./fonts.nix
     ./shell.nix
-    ./programs.nix
+    ./programs
   ];
 
   nixpkgs = {
@@ -62,10 +62,9 @@
 
     btop # replacement of htop/nmon
 
-    # util programs
+    # user programs
     gparted
 
-    # user programs
     discord
     spotify
 
