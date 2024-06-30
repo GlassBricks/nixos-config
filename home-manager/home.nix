@@ -47,7 +47,12 @@
     homeDirectory = "/home/ben";
   };
 
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig = {
+    enable = true;
+    defaultFonts = {
+      monospace = [ "JetBrainsMono Nerd Font Light" ];
+    };
+  };
 
   home.packages = with pkgs; [
     neofetch
