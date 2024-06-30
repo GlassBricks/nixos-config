@@ -50,7 +50,7 @@
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = [ "JetBrainsMono Nerd Font Light" ];
+      monospace = ["JetBrainsMono Nerd Font Light"];
     };
   };
 
@@ -109,7 +109,7 @@
   ];
 
   home.file = {
-    "bin/my-nixos-update" = {
+    "bin/my-nixos-rebuild" = {
       enable = true;
       source = ../rebuild.sh;
     };
