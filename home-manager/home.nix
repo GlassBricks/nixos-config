@@ -104,7 +104,7 @@
   ];
 
   home.file = {
-    "bin/my-nixos-rebuild" = {
+    "bin/my-nixos-update" = {
       enable = true;
       source = ../rebuild.sh;
     };
