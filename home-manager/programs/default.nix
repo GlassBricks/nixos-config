@@ -40,6 +40,8 @@
 
     kdePackages.merkuro
 
+    python
+
     jetbrains-toolbox
   ];
 }
