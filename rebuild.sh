@@ -3,6 +3,9 @@
 # cd to the directory of the script
 cd "/home/ben/nixos-config/" || exit 1
 
+# run alejandra
+alejandra . || exit 1
+
 # commit if there are changes
 if [ -n "$(git status --porcelain)" ]; then
     git add .

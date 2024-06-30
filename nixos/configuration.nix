@@ -59,6 +59,8 @@
       flake-registry = "";
       # Workaround for https://github.com/NixOS/nix/issues/9574
       nix-path = config.nix.nixPath;
+
+      auto-optimise-store = true;
     };
     # Opinionated: disable channels
     #    channel.enable = false;
@@ -66,6 +68,14 @@
     # Opinionated: make flake registry and nix path match flake inputs
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
+
+
+    # Perform GC weekly
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
   };
 
   # Bootloader
@@ -269,7 +279,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    dates = "7d";
+    dates = "weekly";
     randomizedDelaySec = "45min";
     flake = "/etc/nixos";
   };
