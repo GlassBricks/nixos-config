@@ -36,6 +36,8 @@
 
     btop # replacement of htop/nmon
 
+    noisetorch
+
     # user programs
     gparted
 
