@@ -71,11 +71,15 @@
         # fonts
         (nerdfonts.override { fonts = ["JetBrainsMono" "DroidSansMono"]; })
 
+        # util programs
+        gparted
+
         # user programs
         discord
         spotify
 
         kdePackages.merkuro
+
         jetbrains-toolbox
    ];
 
@@ -90,12 +94,17 @@
        enable = true;
        defaultEditor = true;
    };
+
    programs.fish = {
         enable = true;
         shellAliases = {
             ":wq" = "exit";
         };
    };
+   home.sessionPath = [
+      "$HOME/.bin"
+   ];
+
     programs.bash = {
         enable = true;
         enableCompletion = true;
