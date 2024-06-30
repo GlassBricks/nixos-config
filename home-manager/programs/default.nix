@@ -43,6 +43,7 @@
     spotify
 
     kdePackages.merkuro
+    kdePackages.korganizer
 
     jetbrains-toolbox
   ];
