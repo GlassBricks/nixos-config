@@ -105,6 +105,14 @@
       "$HOME/.bin"
    ];
 
+   # symlink ~/nix-config/rebuild.sh to ~/.bin/rebuild
+    home.file = {
+        ".bin/rebuild" = {
+            enable = true;
+            source = ../rebuild.sh;
+        };
+    };
+
     programs.bash = {
         enable = true;
         enableCompletion = true;
