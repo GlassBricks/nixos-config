@@ -157,6 +157,7 @@
     curl
     xclip
     home-manager
+    direnv
   ];
 
   programs.noisetorch.enable = true;
