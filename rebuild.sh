@@ -13,4 +13,4 @@ if git diff --name-only HEAD~1 HEAD | grep -q nixos; then
 fi
 
 # run home-manager switch
-home-manager --flake . switch || exit 1
+home-manager --flake /etc/nixos switch || exit 1
