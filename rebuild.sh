@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-# commit if there are changes; if user abort, then abort
+# commit if there are changes
 if [ -n "$(git status --porcelain)" ]; then
     git add .
     git commit || exit 1
     git push || exit 1
 fi
 
-# pull in /etc/nixos
-sudo git -C /etc/nixos pull || exit 1
+# if changes to nixos folder, run nixos-rebuild
+if git diff --name-only HEAD~1 HEAD | grep -q nixos; then
+    sudo nixos-rebuild switch || exit 1
+fi
 
-# rebuild
-sudo nixos-rebuild switch || exit 1
+# run home-manager switch
+home-manager --flake . switch || exit 1
