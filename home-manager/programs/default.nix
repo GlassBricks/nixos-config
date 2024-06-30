@@ -1,6 +1,10 @@
 # Misc programs
 # If any config becomes large enough it may move to its own file
 {pkgs, ...}: {
+  imports = [
+    ./factorio
+  ];
+
   programs.git = {
     enable = true;
     userName = "GlassBricks";
@@ -39,8 +43,6 @@
     spotify
 
     kdePackages.merkuro
-
-    python
 
     jetbrains-toolbox
   ];
