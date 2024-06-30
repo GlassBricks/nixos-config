@@ -61,6 +61,8 @@
     jq # A lightweight and flexible command-line JSON processor
     eza # A modern replacement for ‘ls’
     xsel
+    nix-tree
+    ripgrep
 
     alejandra
 
@@ -85,6 +87,7 @@
     kdePackages.merkuro
 
     jetbrains-toolbox
+
   ];
 
   programs.git = {
