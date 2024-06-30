@@ -1,14 +1,15 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -17,7 +18,7 @@
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -54,8 +55,8 @@
   # Configure keymap in X11
   services.xserver = {
     xkb = {
-        layout = "us";
-        variant = "";
+      layout = "us";
+      variant = "";
     };
   };
 
@@ -82,7 +83,6 @@
   # Enable bluetooth
   hardware.bluetooth.enable = true;
 
-
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -90,7 +90,7 @@
   users.users.ben = {
     isNormalUser = true;
     description = "Benjamin Ye";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
     packages = with pkgs; [
       firefox
       kate
@@ -99,9 +99,8 @@
 
   # Allow unfree packages
   nixpkgs.config = {
-	allowUnfree = true;
+    allowUnfree = true;
   };
-
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -114,127 +113,127 @@
 
   programs = {
     neovim = {
-        enable = true;
-        defaultEditor = true;
+      enable = true;
+      defaultEditor = true;
     };
   };
 
-   programs.nix-ld.enable = true;
-   programs.nix-ld.libraries = with pkgs; [
-     SDL
-     SDL2
-     SDL2_image
-     SDL2_mixer
-     SDL2_ttf
-     SDL_image
-     SDL_mixer
-     SDL_ttf
-     alsa-lib
-     at-spi2-atk
-     at-spi2-core
-     atk
-     bzip2
-     cairo
-     cups
-     curlWithGnuTls
-     dbus
-     dbus-glib
-     desktop-file-utils
-     e2fsprogs
-     expat
-     flac
-     fontconfig
-     freeglut
-     freetype
-     fribidi
-     fuse
-     fuse3
-     gdk-pixbuf
-     glew110
-     glib
-     gmp
-     gst_all_1.gst-plugins-base
-     gst_all_1.gst-plugins-ugly
-     gst_all_1.gstreamer
-     gtk2
-     harfbuzz
-     icu
-     keyutils.lib
-     libGL
-     libGLU
-     libappindicator-gtk2
-     libcaca
-     libcanberra
-     libcap
-     libclang.lib
-     libdbusmenu
-     libdrm
-     libgcrypt
-     libgpg-error
-     libidn
-     libjack2
-     libjpeg
-     libmikmod
-     libogg
-     libpng12
-     libpulseaudio
-     librsvg
-     libsamplerate
-     libthai
-     libtheora
-     libtiff
-     libudev0-shim
-     libusb1
-     libuuid
-     libvdpau
-     libvorbis
-     libvpx
-     libxcrypt-legacy
-     libxkbcommon
-     libxml2
-     mesa
-     nspr
-     nss
-     openssl
-     p11-kit
-     pango
-     pixman
-     python3
-     speex
-     stdenv.cc.cc
-     tbb
-     udev
-     vulkan-loader
-     wayland
-     xorg.libICE
-     xorg.libSM
-     xorg.libX11
-     xorg.libXScrnSaver
-     xorg.libXcomposite
-     xorg.libXcursor
-     xorg.libXdamage
-     xorg.libXext
-     xorg.libXfixes
-     xorg.libXft
-     xorg.libXi
-     xorg.libXinerama
-     xorg.libXmu
-     xorg.libXrandr
-     xorg.libXrender
-     xorg.libXt
-     xorg.libXtst
-     xorg.libXxf86vm
-     xorg.libpciaccess
-     xorg.libxcb
-     xorg.xcbutil
-     xorg.xcbutilimage
-     xorg.xcbutilkeysyms
-     xorg.xcbutilrenderutil
-     xorg.xcbutilwm
-     xorg.xkeyboardconfig
-     xz
-     zlib
-   ];
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    SDL
+    SDL2
+    SDL2_image
+    SDL2_mixer
+    SDL2_ttf
+    SDL_image
+    SDL_mixer
+    SDL_ttf
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    atk
+    bzip2
+    cairo
+    cups
+    curlWithGnuTls
+    dbus
+    dbus-glib
+    desktop-file-utils
+    e2fsprogs
+    expat
+    flac
+    fontconfig
+    freeglut
+    freetype
+    fribidi
+    fuse
+    fuse3
+    gdk-pixbuf
+    glew110
+    glib
+    gmp
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gstreamer
+    gtk2
+    harfbuzz
+    icu
+    keyutils.lib
+    libGL
+    libGLU
+    libappindicator-gtk2
+    libcaca
+    libcanberra
+    libcap
+    libclang.lib
+    libdbusmenu
+    libdrm
+    libgcrypt
+    libgpg-error
+    libidn
+    libjack2
+    libjpeg
+    libmikmod
+    libogg
+    libpng12
+    libpulseaudio
+    librsvg
+    libsamplerate
+    libthai
+    libtheora
+    libtiff
+    libudev0-shim
+    libusb1
+    libuuid
+    libvdpau
+    libvorbis
+    libvpx
+    libxcrypt-legacy
+    libxkbcommon
+    libxml2
+    mesa
+    nspr
+    nss
+    openssl
+    p11-kit
+    pango
+    pixman
+    python3
+    speex
+    stdenv.cc.cc
+    tbb
+    udev
+    vulkan-loader
+    wayland
+    xorg.libICE
+    xorg.libSM
+    xorg.libX11
+    xorg.libXScrnSaver
+    xorg.libXcomposite
+    xorg.libXcursor
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXft
+    xorg.libXi
+    xorg.libXinerama
+    xorg.libXmu
+    xorg.libXrandr
+    xorg.libXrender
+    xorg.libXt
+    xorg.libXtst
+    xorg.libXxf86vm
+    xorg.libpciaccess
+    xorg.libxcb
+    xorg.xcbutil
+    xorg.xcbutilimage
+    xorg.xcbutilkeysyms
+    xorg.xcbutilrenderutil
+    xorg.xcbutilwm
+    xorg.xkeyboardconfig
+    xz
+    zlib
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -262,5 +261,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
-
 }

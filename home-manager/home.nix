@@ -49,40 +49,38 @@
 
   fonts.fontconfig.enable = true;
 
-   home.packages = with pkgs; [
-        neofetch
+  home.packages = with pkgs; [
+    neofetch
 
-        # utils
-        jq # A lightweight and flexible command-line JSON processor
-        eza # A modern replacement for ‘ls’
-        xsel
+    # utils
+    jq # A lightweight and flexible command-line JSON processor
+    eza # A modern replacement for ‘ls’
+    xsel
 
-        alejandra
+    alejandra
 
+    # misc
+    file
+    which
+    tree
+    gnutar
 
-        # misc
-        file
-        which
-        tree
-        gnutar
+    btop # replacement of htop/nmon
 
-        btop  # replacement of htop/nmon
+    # fonts
+    (nerdfonts.override {fonts = ["JetBrainsMono" "DroidSansMono"];})
 
+    # util programs
+    gparted
 
-        # fonts
-        (nerdfonts.override { fonts = ["JetBrainsMono" "DroidSansMono"]; })
+    # user programs
+    discord
+    spotify
 
-        # util programs
-        gparted
+    kdePackages.merkuro
 
-        # user programs
-        discord
-        spotify
-
-        kdePackages.merkuro
-
-        jetbrains-toolbox
-   ];
+    jetbrains-toolbox
+  ];
 
   programs.git = {
     enable = true;
@@ -90,65 +88,63 @@
     userEmail = "24237065+GlassBricks@users.noreply.github.com";
   };
 
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+  };
 
-   programs.neovim = {
-       enable = true;
-       defaultEditor = true;
-   };
-
-   programs.fish = {
-        enable = true;
-        shellAliases = {
-            ":wq" = "exit";
-        };
-   };
-   home.sessionPath = [
-      "$HOME/bin"
-   ];
-
-    home.file = {
-        "bin/my-nixos-rebuild" = {
-            enable = true;
-            source = ../rebuild.sh;
-        };
+  programs.fish = {
+    enable = true;
+    shellAliases = {
+      ":wq" = "exit";
     };
+  };
+  home.sessionPath = [
+    "$HOME/bin"
+  ];
 
-    programs.bash = {
-        enable = true;
-        enableCompletion = true;
-        bashrcExtra = ''
-          export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
-        '';
-        initExtra = ''
-          if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-          then
-            shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-            exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-          fi
-        '';
+  home.file = {
+    "bin/my-nixos-rebuild" = {
+      enable = true;
+      source = ../rebuild.sh;
     };
+  };
 
-	programs.kitty = {
-		enable = true;
-		shellIntegration = {
-			enableFishIntegration = true;
-			enableBashIntegration = true;
-		};
-		 theme = "Catppuccin-Macchiato";
-		 font = {
-		 	name = "JetBrainsMono Nerd Font Light";
-			size = 10;
-		 };
-		 extraConfig = ''
-			background_opacity 0.8
-			bold_font JetBrainsMono Nerd Font
-			italic_font JetBrainsMono Nerd Font Light Italic
-			bold_italic_font JetBrainsMono Nerd Font Italic
-		 '';
-	};
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+    bashrcExtra = ''
+      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+    '';
+    initExtra = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+      then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
+    '';
+  };
 
-	programs.java.enable = true;
+  programs.kitty = {
+    enable = true;
+    shellIntegration = {
+      enableFishIntegration = true;
+      enableBashIntegration = true;
+    };
+    theme = "Catppuccin-Macchiato";
+    font = {
+      name = "JetBrainsMono Nerd Font Light";
+      size = 10;
+    };
+    extraConfig = ''
+      background_opacity 0.8
+      bold_font JetBrainsMono Nerd Font
+      italic_font JetBrainsMono Nerd Font Light Italic
+      bold_italic_font JetBrainsMono Nerd Font Italic
+    '';
+  };
 
+  programs.java.enable = true;
 
   # Enable home-manager and git
   programs.home-manager.enable = true;

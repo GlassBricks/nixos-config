@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   home.username = "ben";
   home.homeDirectory = "/home/ben";
 
@@ -23,7 +25,6 @@
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
-
     neofetch
 
     # utils
@@ -44,10 +45,10 @@
     # with more details log output
     nix-output-monitor
 
-    btop  # replacement of htop/nmon
+    btop # replacement of htop/nmon
 
     # fonts
-    (nerdfonts.override { fonts = ["JetBrainsMono" "DroidSansMono"]; })
+    (nerdfonts.override {fonts = ["JetBrainsMono" "DroidSansMono"];})
 
     # user programs
     discord
@@ -65,7 +66,7 @@
   };
 
   programs.fish = {
-      enable=true;
+    enable = true;
   };
 
   programs.bash = {
@@ -85,30 +86,28 @@
     # set some aliases, feel free to add more or remove some
     shellAliases = {
     };
+  };
+
+  programs.kitty = {
+    enable = true;
+    shellIntegration = {
+      enableFishIntegration = true;
+      enableBashIntegration = true;
     };
+    theme = "Catppuccin-Macchiato";
+    font = {
+      name = "JetBrainsMono Nerd Font Light";
+      size = 10;
+    };
+    extraConfig = ''
+      background_opacity 0.8
+      bold_font JetBrainsMono Nerd Font
+      italic_font JetBrainsMono Nerd Font Light Italic
+      bold_italic_font JetBrainsMono Nerd Font Italic
+    '';
+  };
 
-	programs.kitty = {
-		enable = true;
-		shellIntegration = {
-			enableFishIntegration = true;
-			enableBashIntegration = true;
-		};
-		 theme = "Catppuccin-Macchiato";
-		 font = {
-		 	name = "JetBrainsMono Nerd Font Light";
-			size = 10;
-		 };
-		 extraConfig = ''
-			background_opacity 0.8
-			bold_font JetBrainsMono Nerd Font
-			italic_font JetBrainsMono Nerd Font Light Italic
-			bold_italic_font JetBrainsMono Nerd Font Italic
-		 '';
-	};
-
-	programs.java.enable = true;
-
-
+  programs.java.enable = true;
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
