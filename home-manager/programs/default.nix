@@ -45,6 +45,7 @@
     spotify
 
     kdePackages.merkuro
+    kdePackages.dragon
 
     jetbrains-toolbox
   ];
