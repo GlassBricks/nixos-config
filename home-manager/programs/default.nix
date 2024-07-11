@@ -39,11 +39,12 @@
     # user programs
     gparted
 
+    qmplay2
+
     discord
     spotify
 
     kdePackages.merkuro
-    kdePackages.korganizer
 
     jetbrains-toolbox
   ];
