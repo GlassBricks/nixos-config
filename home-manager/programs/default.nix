@@ -26,6 +26,8 @@
     nix-tree
     ripgrep
 
+    killall
+
     alejandra
 
     # misc
