@@ -23,6 +23,7 @@
     ripgrep
 
     killall
+    xorg.xkill
 
     alejandra
 
