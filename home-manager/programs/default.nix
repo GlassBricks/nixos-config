@@ -35,6 +35,8 @@
 
     btop # replacement of htop/nmon
 
+    piper
+
     # user programs
     gparted
 

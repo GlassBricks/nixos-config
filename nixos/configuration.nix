@@ -135,6 +135,10 @@
   # Enable bluetooth
   hardware.bluetooth.enable = true;
 
+  # other services
+
+  services.ratbagd.enable = true;
+
   users.users = {
     ben = {
       initialPassword = "correcthorsebatterystaple";
