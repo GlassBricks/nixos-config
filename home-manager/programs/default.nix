@@ -40,13 +40,14 @@
     # user programs
     gparted
 
-    qmplay2
-
     discord
     spotify
 
-    kdePackages.merkuro
+    obsidian
+
+    qmplay2
     kdePackages.dragon
+    kdePackages.merkuro
 
     jetbrains-toolbox
   ];
