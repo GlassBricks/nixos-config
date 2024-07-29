@@ -15,7 +15,8 @@
   programs.obs-studio.enable = true;
 
   home.packages = with pkgs; [
-    neofetch
+    # dev
+    nodejs
 
     # utils
     jq # A lightweight and flexible command-line JSON processor
