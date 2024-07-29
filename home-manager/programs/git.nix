@@ -1,5 +1,3 @@
-# Misc programs
-# If any config becomes large enough it may move to its own file
 {...}: {
   programs.git = {
     enable = true;
