@@ -42,6 +42,8 @@
     piper
 
     # user programs
+    flitter
+
     gparted
 
     discord
