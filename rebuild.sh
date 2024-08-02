@@ -10,8 +10,8 @@ alejandra . || exit 1
 if [ -n "$(git status --porcelain)" ]; then
     git add .
     git commit || exit 1
-    git push || exit 1
 fi
+git push || exit 1
 
 # shouldUpdateAll = (-a in args) or (flake.nix changed)
 shouldUpdateAll=false
