@@ -7,11 +7,11 @@ cd "/home/ben/nixos-config/" || exit 1
 alejandra . || exit 1
 
 # commit if there are changes
-#if [ -n "$(git status --porcelain)" ]; then
-#    git add .
-#    git commit || exit 1
-#    git push || exit 1
-#fi
+if [ -n "$(git status --porcelain)" ]; then
+    git add .
+    git commit || exit 1
+    git push || exit 1
+fi
 
 # shouldUpdateAll = (-a in args) or (flake.nix changed)
 shouldUpdateAll=false
@@ -33,11 +33,11 @@ fi
 echo shouldUpdateAll: $shouldUpdateAll
 echo shouldUpdateNixos: $shouldUpdateNixos
 echo shouldUpdateHomeManager: $shouldUpdateHomeManager
-#
-#if $shouldUpdateNixos; then
-#    sudo nixos-rebuild --flake . switch || exit 1
-#fi
-#
-#if $shouldUpdateHomeManager; then
-#    home-manager switch --flake . || exit 1
-#fi
+
+if $shouldUpdateNixos; then
+    sudo nixos-rebuild --flake . switch || exit 1
+fi
+
+if $shouldUpdateHomeManager; then
+    home-manager switch --flake . || exit 1
+fi

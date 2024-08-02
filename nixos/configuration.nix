@@ -155,6 +155,7 @@
   };
 
   environment.systemPackages = with pkgs; [
+    bash
     vim
     git
     wget
@@ -163,9 +164,17 @@
     home-manager
     direnv
     kdePackages.kde-gtk-config
+    libsForQt5.kdeconnect-kde
   ];
 
   programs.dconf.enable = true;
+
+  system.activationScripts.binbash = {
+    deps = ["binsh"];
+    text = ''
+      ln -s /bin/sh /bin/bash
+    '';
+  };
 
   programs.noisetorch.enable = true;
 
