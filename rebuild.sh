@@ -7,23 +7,37 @@ cd "/home/ben/nixos-config/" || exit 1
 alejandra . || exit 1
 
 # commit if there are changes
-if [ -n "$(git status --porcelain)" ]; then
-    git add .
-    git commit || exit 1
-    git push || exit 1
+#if [ -n "$(git status --porcelain)" ]; then
+#    git add .
+#    git commit || exit 1
+#    git push || exit 1
+#fi
+
+# shouldUpdateAll = (-a in args) or (flake.nix changed)
+shouldUpdateAll=false
+if [ "$1" == "-a" ] || git diff --name-only HEAD^ HEAD | grep -q "^(flake\.nix|flake\.lock|modules|overlays|pkgs)"; then
+    shouldUpdateAll=true
 fi
 
-# see if args contains "-a", store in shouldUpdateAll
-shouldUpdateAll=$(echo "$@" | grep -q -- "-a" && echo "true")
-
-# if shouldUpdateAll, or changes to nixos folder, run nixos-rebuild
-shouldUpdateNixos=$shouldUpdateAll || git diff --name-only HEAD~1 HEAD | grep -q nixos
-if [ -n "$shouldUpdateNixos" ]; then
-    sudo nixos-rebuild --flake . switch || exit 1
+# shouldUpdateNixos = shouldUpdateAll or (nixos folder changed)
+shouldUpdateNixos=false
+if $shouldUpdateAll || git diff --name-only HEAD^ HEAD | grep -q "^nixos"; then
+    shouldUpdateNixos=true
 fi
 
-# if changes to home-manager folder, or nixos rebuild was run, run home-manager switch
-shouldUpdateHomeManager=$shouldUpdateAll || [ -n "$shouldUpdateNixos" ] || git diff --name-only HEAD~1 HEAD | grep -q home-manager
-if [ -n "$shouldUpdateHomeManager" ]; then
-    home-manager switch --flake . || exit 1
+shouldUpdateHomeManager=false
+if $shouldUpdateNixos || git diff --name-only HEAD^ HEAD | grep -q "^home-manager"; then
+    shouldUpdateHomeManager=true
 fi
+
+echo shouldUpdateAll: $shouldUpdateAll
+echo shouldUpdateNixos: $shouldUpdateNixos
+echo shouldUpdateHomeManager: $shouldUpdateHomeManager
+#
+#if $shouldUpdateNixos; then
+#    sudo nixos-rebuild --flake . switch || exit 1
+#fi
+#
+#if $shouldUpdateHomeManager; then
+#    home-manager switch --flake . || exit 1
+#fi
