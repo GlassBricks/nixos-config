@@ -13,14 +13,17 @@ if [ -n "$(git status --porcelain)" ]; then
     git push || exit 1
 fi
 
-# if changes to nixos folder, run nixos-rebuild
-#if git diff --name-only HEAD~1 HEAD | grep -q nixos; then
-shouldUpdate=$(git diff --name-only HEAD~1 HEAD | grep nixos)
-if [ -n "$shouldUpdate" ]; then
+# see if args contains "-a", store in shouldUpdateAll
+shouldUpdateAll=$(echo "$@" | grep -q -- "-a" && echo "true")
+
+# if shouldUpdateAll, or changes to nixos folder, run nixos-rebuild
+shouldUpdateNixos=$shouldUpdateAll || git diff --name-only HEAD~1 HEAD | grep -q nixos
+if [ -n "$shouldUpdateNixos" ]; then
     sudo nixos-rebuild --flake . switch || exit 1
 fi
 
 # if changes to home-manager folder, or nixos rebuild was run, run home-manager switch
-if [ -n "$shouldUpdate" ] || git diff --name-only HEAD~1 HEAD | grep -q home-manager; then
+shouldUpdateHomeManager=$shouldUpdateAll || [ -n "$shouldUpdateNixos" ] || git diff --name-only HEAD~1 HEAD | grep -q home-manager
+if [ -n "$shouldUpdateHomeManager" ]; then
     home-manager switch --flake . || exit 1
 fi

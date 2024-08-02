@@ -162,7 +162,10 @@
     xclip
     home-manager
     direnv
+    kdePackages.kde-gtk-config
   ];
+
+  programs.dconf.enable = true;
 
   programs.noisetorch.enable = true;
 

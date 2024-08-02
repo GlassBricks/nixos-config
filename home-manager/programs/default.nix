@@ -42,9 +42,9 @@
     piper
 
     # user programs
-    flitter
-
     gparted
+
+    livesplit-one
 
     discord
     spotify
