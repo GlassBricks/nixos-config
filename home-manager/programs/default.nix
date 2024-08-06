@@ -55,6 +55,7 @@
     kdePackages.dragon
     kdePackages.merkuro
     kdePackages.ktimer
+    kdePackages.kcalc
     kdePackages.kalgebra
 
     jetbrains-toolbox
