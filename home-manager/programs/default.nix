@@ -54,6 +54,7 @@
     qmplay2
     kdePackages.dragon
     kdePackages.merkuro
+    kdePackages.ktimer
 
     jetbrains-toolbox
   ];
