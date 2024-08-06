@@ -47,7 +47,6 @@
     livesplit-one
 
     discord
-    vesktop
     spotify
 
     obsidian
