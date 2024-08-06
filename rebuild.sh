@@ -15,7 +15,7 @@ git push || exit 1
 
 # shouldUpdateAll = (-a in args) or (flake.nix changed)
 shouldUpdateAll=false
-if [ "$1" == "-a" ] || git diff --name-only HEAD^ HEAD | grep -q "^(flake.nix|flake.lock|modules|overlays|pkgs)"; then
+if [ "$1" == "-a" ] || git diff --name-only HEAD^ HEAD | grep -q "^(flake|modules|overlays|pkgs)"; then
     shouldUpdateAll=true
 fi
 
