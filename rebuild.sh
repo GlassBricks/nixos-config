@@ -11,7 +11,6 @@ if [ -n "$(git status --porcelain)" ]; then
     git add .
     git commit || exit 1
 fi
-git push || exit 1
 
 # shouldUpdateAll = (-a in args) or (flake.nix changed)
 shouldUpdateAll=false
@@ -41,3 +40,6 @@ fi
 if $shouldUpdateHomeManager; then
     home-manager switch --flake . || exit 1
 fi
+
+# only push if successful
+git push || exit 1
