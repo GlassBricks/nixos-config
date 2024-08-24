@@ -88,7 +88,7 @@
   };
 
   # time zone
-  time.timeZone = "America/Los_Angeles";
+  time.timeZone = "America/Chicago";
   #  services.automatic-timezoned.enable = true;
 
   # internationalisation
