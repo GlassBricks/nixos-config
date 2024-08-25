@@ -2,9 +2,9 @@
   "x86_64-linux": {
     "alpha": {
       "experimental": {
-        "name": "factorio_alpha_x64-1.1.109.tar.xz",
+        "name": "factorio_alpha_x64-1.1.110.tar.xz",
         "needsAuth": true,
-        "sha256": "1fmgh5b4sq9lcbjz0asvq5zcwf25cqdn5jc2ickind2lnkhd557h",
+        "sha256": "0ndhb94lh47n09a7wshm2inv52fd6rjfa7fk7nk9b7zzh84i7f4x",
         "tarDirectory": "x64",
         "url": "https://factorio.com/get-download/1.1.109/alpha/linux64",
         "version": "1.1.109"
