@@ -15,6 +15,8 @@
 
   programs.obs-studio.enable = true;
 
+  programs.freetube.enable = true;
+
   home.packages = with pkgs; [
     # dev
     nodejs
