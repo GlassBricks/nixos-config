@@ -41,9 +41,8 @@
 
     btop # replacement of htop/nmon
 
-    piper
-
     # user programs
+    piper
     gparted
 
     livesplit-one

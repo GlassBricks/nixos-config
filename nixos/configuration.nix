@@ -81,6 +81,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.kernel.sysctl."vm.swappiness" = 10;
+
   # networking
   networking = {
     hostName = "nixos";
@@ -171,7 +173,7 @@
   system.activationScripts.binbash = {
     deps = ["binsh"];
     text = ''
-      ln -s /bin/sh /bin/bash || true
+      ln -s /bin/sh /bin/bash 2> /dev/null || true
     '';
   };
 
