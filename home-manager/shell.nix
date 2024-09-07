@@ -7,7 +7,7 @@
   home.file = {
     "bin/my-nixos-rebuild" = {
       enable = true;
-      source = ../rebuild.sh;
+      source = ../rebuild.py;
     };
   };
 

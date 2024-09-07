@@ -166,6 +166,7 @@
     home-manager
     direnv
     kdePackages.kde-gtk-config
+    cached-nix-shell
   ];
 
   programs.dconf.enable = true;
