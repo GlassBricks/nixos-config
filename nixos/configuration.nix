@@ -81,7 +81,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernel.sysctl."vm.swappiness" = 10;
+  boot.kernel.sysctl."vm.swappiness" = 1;
 
   # networking
   networking = {
@@ -194,6 +194,7 @@
     at-spi2-atk
     at-spi2-core
     atk
+    alsa-lib
     bzip2
     cairo
     cups

@@ -5,6 +5,7 @@
     ./git.nix
     ./vscode.nix
     ./factorio
+    ./custom-factorio.nix
   ];
 
   programs.neovim = {
@@ -62,4 +63,9 @@
 
     jetbrains-toolbox
   ];
+
+  #  custom.factorio-install = {
+  #    test = {
+  #    };
+  #  };
 }
