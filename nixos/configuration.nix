@@ -81,7 +81,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernel.sysctl."vm.swappiness" = 10;
 
   # networking
   networking = {
