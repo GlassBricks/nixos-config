@@ -4,7 +4,6 @@
   imports = [
     ./git.nix
     ./vscode.nix
-    ./factorio
     ./custom-factorio.nix
   ];
 
@@ -64,8 +63,9 @@
     jetbrains-toolbox
   ];
 
-  #  custom.factorio-install = {
-  #    test = {
-  #    };
-  #  };
+  custom.factorio-install = {
+    "100p-design" = {
+      displayName = "100% Design";
+    };
+  };
 }
