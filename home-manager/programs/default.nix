@@ -64,8 +64,15 @@
   ];
 
   custom.factorio-install = {
+    default = {
+      displayName = "";
+      executableName = "factorio";
+    };
     "100p-design" = {
       displayName = "100% Design";
+    };
+    "100p-runs" = {
+      displayName = "100% Runs";
     };
   };
 }

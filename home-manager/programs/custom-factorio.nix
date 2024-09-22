@@ -61,6 +61,10 @@ with lib; let
         type = types.bool;
         default = true;
       };
+      executableName = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+      };
     };
   });
   launcherScript = pkgs.writeScript "factorio-launcher" ''
@@ -90,6 +94,7 @@ with lib; let
   '';
   configTemplate = ''
     [path]
+    read-data=__PATH__executable__/../../data
     write-data=TOBEFILLED
   '';
   createFactorioDir = dataDir: installDir: baseConfigCopyPath: ''
@@ -97,8 +102,8 @@ with lib; let
     # Create config/config.cfg if it doesn't exist
     run mkdir -p "${dataDir}/config"
     if [ ! -f "${dataDir}/config/config.ini" ]; then
-      if [ -f "${baseConfigCopyPath}/config/config.ini" ]; then
-        run cp "${baseConfigCopyPath}/config/config.ini" "${dataDir}/config/config.ini"
+      if [ -f "${baseConfigCopyPath}" ]; then
+        run cp "${baseConfigCopyPath}" "${dataDir}/config/config.ini"
       else
         if [[ -v DRY_RUN ]]; then
           echo "Writing default config.ini to ${dataDir}/config/config.ini"
@@ -187,5 +192,10 @@ in {
         }
       )
       cfg;
+    home.packages =
+      attrsets.mapAttrsToList (
+        k: v: pkgs.writeScriptBin v.executableName ''${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
+      )
+      (attrsets.filterAttrs (k: v: v.executableName != null) cfg);
   };
 }
