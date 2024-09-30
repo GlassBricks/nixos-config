@@ -86,6 +86,8 @@ with lib; let
     #export MIMALLOC_PURGE_DELAY=10 # Delay before purging memory
     export MIMALLOC_SHOW_STATS=0 # Display mimalloc stats
 
+    #export SDL_VIDEODRIVER=wayland
+
     export MALLOC_ARENA_MAX=1 # Use only one arena
     export LD_PRELOAD="$LD_PRELOAD ${pkgs.mimalloc}/lib/libmimalloc.so"
 
