@@ -61,6 +61,14 @@
     kdePackages.kalgebra
 
     jetbrains-toolbox
+    (win2xcur.overrideAttrs {
+      src = fetchFromGitHub {
+        owner = "quantum5";
+        repo = "win2xcur";
+        rev = "8e71037f5f90f3cea82a74fe516ee637dea113fa";
+        sha256 = "sha256-4Evd3Aa2gpS2J+vkflV/aQypX419l8gI3Pa39wF9D0U=";
+      };
+    })
   ];
 
   custom.factorio-install = {
@@ -70,6 +78,9 @@
     };
     "100p-design" = {
       displayName = "100% Design";
+    };
+    "100p-design2" = {
+      displayName = "100% Design 2";
     };
     "100p-runs" = {
       displayName = "100% Runs";
