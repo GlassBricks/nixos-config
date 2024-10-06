@@ -84,6 +84,7 @@
     };
     "100p-runs" = {
       displayName = "100% Runs";
+      linkCommon = ["mods"];
     };
   };
 }
