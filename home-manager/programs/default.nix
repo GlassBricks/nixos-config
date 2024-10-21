@@ -79,12 +79,14 @@
     "100p-design" = {
       displayName = "100% Design";
     };
-    "100p-design2" = {
-      displayName = "100% Design 2";
-    };
     "100p-runs" = {
       displayName = "100% Runs";
       linkCommon = ["mods"];
+    };
+    "space-age" = {
+      displayName = "Spage age";
+      linkCommon = [];
+      installDir = "opt/factorio-spage-age";
     };
   };
 }
