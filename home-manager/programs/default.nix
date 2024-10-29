@@ -20,6 +20,7 @@
   home.packages = with pkgs; [
     # dev
     nodejs
+    bun
 
     # utils
     jq # A lightweight and flexible command-line JSON processor
