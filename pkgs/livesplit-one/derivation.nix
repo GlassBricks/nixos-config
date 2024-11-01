@@ -29,7 +29,7 @@ in
 
     src = fetchurl {
       url = "https://github.com/LiveSplit/LiveSplitOne/releases/download/latest/LiveSplitOne-x86_64-linux.tar.gz";
-      hash = "sha256-jM5/HQsSctfq1yIyzcLFFlfJ3WdUgkzCfnjkC+fKgKI=";
+      hash = "sha256-e5s8og468n7yP8nKNPT4+x/urVUzgcQ8UGHEDqXhCLM=";
     };
 
     nativeBuildInputs = [

@@ -47,6 +47,7 @@
     gparted
 
     livesplit-one
+    urn-timer
 
     discord
     vesktop
