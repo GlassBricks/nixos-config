@@ -30,7 +30,6 @@
     ripgrep
 
     killall
-    xorg.xkill
 
     alejandra
 
@@ -43,18 +42,23 @@
     btop # replacement of htop/nmon
 
     # user programs
+    # utils
     piper
     gparted
 
-    livesplit-one
+    # games and stuff
+    # livesplit-one
     urn-timer
 
+    steam
     discord
     vesktop
-    spotify
 
+    # other stuff
+    spotify
     obsidian
 
+    # video players, kde stuff
     qmplay2
     kdePackages.dragon
     kdePackages.merkuro
@@ -62,6 +66,7 @@
     kdePackages.kcalc
     kdePackages.kalgebra
 
+    # dev
     jetbrains-toolbox
     (win2xcur.overrideAttrs {
       src = fetchFromGitHub {
@@ -89,6 +94,11 @@
       displayName = "Spage age";
       linkCommon = [];
       installDir = "opt/factorio-spage-age";
+    };
+    "space-age-stable" = {
+      displayName = "Space age Stable";
+      linkCommon = [];
+      installDir = "opt/factorio-space-age-stable";
     };
   };
 }
