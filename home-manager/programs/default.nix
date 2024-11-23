@@ -81,7 +81,7 @@
   custom.factorio-install = {
     default = {
       displayName = "";
-      executableName = "factorio";
+      executableName = "factorio11";
     };
     "100p-design" = {
       displayName = "100% Design";
@@ -94,6 +94,7 @@
       displayName = "Spage age";
       linkCommon = [];
       installDir = "opt/factorio-spage-age";
+      executableName = "factorio";
     };
     "space-age-stable" = {
       displayName = "Space age Stable";
