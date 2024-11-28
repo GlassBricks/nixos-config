@@ -196,7 +196,7 @@ in {
       cfg;
     home.packages =
       attrsets.mapAttrsToList (
-        k: v: pkgs.writeScriptBin v.executableName ''${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
+        k: v: pkgs.writeScriptBin v.executableName ''exec ${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
       )
       (attrsets.filterAttrs (k: v: v.executableName != null) cfg);
   };
