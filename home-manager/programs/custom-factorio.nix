@@ -92,7 +92,7 @@ with lib; let
     export LD_PRELOAD="$LD_PRELOAD ${pkgs.mimalloc}/lib/libmimalloc.so"
 
     # run factorio
-    $FACTORIO_PATH/bin/x64/factorio -c "$CONFIG_FILE" "$@"
+    exec $FACTORIO_PATH/bin/x64/factorio -c "$CONFIG_FILE" "$@"
   '';
   configTemplate = ''
     [path]
