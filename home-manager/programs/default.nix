@@ -66,6 +66,8 @@
     kdePackages.kcalc
     kdePackages.kalgebra
 
+    handbrake
+
     # dev
     jetbrains-toolbox
     (win2xcur.overrideAttrs {
