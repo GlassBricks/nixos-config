@@ -20,6 +20,7 @@
   home.packages = with pkgs; [
     # dev
     unstable.nodejs
+    pnpm
     bun
 
     # utils
