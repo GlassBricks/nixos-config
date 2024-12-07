@@ -21,6 +21,7 @@
     # dev
     unstable.nodejs
     pnpm
+    yarn
     bun
 
     # utils
