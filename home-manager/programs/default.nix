@@ -30,6 +30,7 @@
     xsel
     nix-tree
     ripgrep
+    tribler
 
     killall
 
