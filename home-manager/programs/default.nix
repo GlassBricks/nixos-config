@@ -49,6 +49,8 @@
     piper
     gparted
 
+    qmk
+
     # games and stuff
     # livesplit-one
     urn-timer
