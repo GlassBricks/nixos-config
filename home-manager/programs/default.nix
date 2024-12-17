@@ -50,6 +50,7 @@
     gparted
 
     qmk
+    gcc-arm-embedded
 
     # games and stuff
     # livesplit-one
