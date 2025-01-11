@@ -10,7 +10,7 @@ def run(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
 
-os.chdir("/etc/nixos")
+os.chdir("/home/ben/nixos-config")
 
 
 def has_git_changes():
