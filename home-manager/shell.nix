@@ -39,7 +39,7 @@
       enableFishIntegration = true;
       enableBashIntegration = true;
     };
-    theme = "Catppuccin-Macchiato";
+    themeFile = "Catppuccin-Macchiato";
     font = {
       name = "JetBrainsMono Nerd Font Light";
       size = 10;
