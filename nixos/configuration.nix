@@ -144,7 +144,7 @@
       initialPassword = "correcthorsebatterystaple";
       isNormalUser = true;
       description = "Benjamin";
-      extraGroups = ["networkmanager" "wheel"];
+      extraGroups = ["networkmanager" "wheel" "openrazer"];
       openssh.authorizedKeys.keys = [
         # SSH public key(s) go here
       ];
@@ -165,8 +165,11 @@
     direnv
     kdePackages.kde-gtk-config
     cached-nix-shell
+    openrazer-daemon
+    polychromatic
   ];
 
+  hardware.openrazer.enable = true;
   programs.dconf.enable = true;
 
   system.activationScripts.binbash = {
