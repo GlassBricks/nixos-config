@@ -50,7 +50,7 @@ with lib; let
       linkCommon = mkOption {
         description = "List of files/directories to link from the common directory";
         type = types.listOf types.str;
-        default = ["mods" "saves"];
+        default = ["mods"];
       };
       links = mkOption {
         description = "key/value pairs of files to link";
@@ -119,22 +119,24 @@ with lib; let
     # sed read-data and write-data to the correct paths
     run sed -i 's|^write-data=.*|write-data=${dataDir}|' "${dataDir}/config/config.ini"
   '';
-  cfg = filterAttrs (name: v: v.enable) config.custom.factorio-install;
+  cfgInstances = filterAttrs (name: v: v.enable) config.custom.factorio-install.instances;
   mkOutOfStoreLink = config.lib.file.mkOutOfStoreSymlink;
 in {
   options = {
     custom.factorio-install = mkOption {
       description = "Custom factorio installation";
       default = {};
-      type = types.attrsOf installConfigType;
+      type = types.submodule {
+        options = {
+          instances = mkOption {
+            description = "Factorio installation instances";
+            type = types.attrsOf installConfigType;
+          };
+        };
+      };
     };
   };
   config = {
-    home.activation.checkFactorioNames = hm.dag.entryBefore ["writeBoundary"] (
-      let
-        foo = map (name: v: checkName name) cfg;
-      in ""
-    );
     # for each install config, create a directory for it
     home.activation.generateFactorioDataDirs = hm.dag.entryAfter ["writeBoundary"] (
       concatStrings (
@@ -146,7 +148,7 @@ in {
         in (
           createFactorioDir v.dataDir v.installDir baseConfigCopyPath
         ))
-        cfg
+        cfgInstances
       )
     );
     home.file =
@@ -176,7 +178,7 @@ in {
           )
           links
       )
-      cfg;
+      cfgInstances;
     # make custom icons
     xdg.desktopEntries =
       attrsets.concatMapAttrs (
@@ -193,11 +195,11 @@ in {
           };
         }
       )
-      cfg;
+      cfgInstances;
     home.packages =
       attrsets.mapAttrsToList (
         k: v: pkgs.writeScriptBin v.executableName ''exec ${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
       )
-      (attrsets.filterAttrs (k: v: v.executableName != null) cfg);
+      (attrsets.filterAttrs (k: v: v.executableName != null) cfgInstances);
   };
 }

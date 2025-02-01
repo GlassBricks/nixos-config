@@ -15,7 +15,10 @@
 
   programs.obs-studio.enable = true;
 
-  programs.freetube.enable = true;
+  programs.freetube = {
+    package = pkgs.unstable.freetube;
+    enable = true;
+  };
 
   home.packages = with pkgs; [
     # dev
@@ -30,17 +33,13 @@
     xsel
     nix-tree
     ripgrep
-    tribler
-
     killall
-
-    alejandra
-
-    # misc
     file
     which
     tree
     gnutar
+
+    # misc
 
     btop # replacement of htop/nmon
 
@@ -48,19 +47,21 @@
     # utils
     piper
     gparted
+    alejandra
 
+    # qmk
     qmk
     gcc-arm-embedded
 
     # games and stuff
-    # livesplit-one
     urn-timer
 
     steam
     discord
     vesktop
 
-    # other stuff
+    # other applications
+    tribler
     spotify
     obsidian
 
@@ -87,27 +88,30 @@
   ];
 
   custom.factorio-install = {
-    default = {
-      displayName = "";
-      executableName = "factorio11";
-    };
-    "100p-design" = {
-      displayName = "100% Design";
-    };
-    "100p-runs" = {
-      displayName = "100% Runs";
-      linkCommon = ["mods"];
-    };
-    "space-age" = {
-      displayName = "Spage age";
-      linkCommon = [];
-      installDir = "opt/factorio-spage-age";
-      executableName = "factorio";
-    };
-    "space-age-stable" = {
-      displayName = "Space age Stable";
-      linkCommon = [];
-      installDir = "opt/factorio-space-age-stable";
+    instances = {
+      default = {
+        displayName = "";
+        executableName = "factorio";
+      };
+      "stable" = {
+        installDir = "opt/factorio-stable";
+      };
+      "1.1" = {
+        displayName = "1.1";
+        executableName = "factorio11";
+        installDir = "opt/factorio-1.1";
+        linkCommon = [];
+      };
+      "1.1-100p-design" = {
+        displayName = "1.1 100% Design";
+        installDir = "opt/factorio-1.1";
+        linkCommon = [];
+      };
+      "1.1-100p-runs" = {
+        displayName = "1.1 100% Runs";
+        installDir = "opt/factorio-1.1";
+        linkCommon = [];
+      };
     };
   };
 }
