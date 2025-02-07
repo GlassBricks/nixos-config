@@ -41,7 +41,8 @@
 
     # misc
 
-    btop # replacement of htop/nmon
+    btop
+    zenity
 
     # user programs
     # utils
@@ -76,6 +77,7 @@
     handbrake
 
     # dev
+    graphviz
     jetbrains-toolbox
     (win2xcur.overrideAttrs {
       src = fetchFromGitHub {
@@ -93,6 +95,7 @@
         displayName = "";
         executableName = "factorio";
       };
+      planning = {};
       "stable" = {
         installDir = "opt/factorio-stable";
       };

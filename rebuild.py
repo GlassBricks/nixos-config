@@ -69,7 +69,7 @@ try:
         run("sudo nixos-rebuild --flake . switch")
 
     if should_update_home:
-        run("home-manager switch --flake .")
+        run("home-manager --flake . switch")
 except CalledProcessError:
     if made_commit:
         run("git reset HEAD^")
