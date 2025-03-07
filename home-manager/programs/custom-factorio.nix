@@ -54,7 +54,7 @@ with lib; let
       };
       links = mkOption {
         description = "key/value pairs of files to link";
-        type = types.attrsOf types.path;
+        type = types.attrsOf types.str;
         default = {};
       };
       copyBaseConfigFromCommon = mkOption {
@@ -171,7 +171,7 @@ in {
           attrsets.concatMapAttrs (
             target: source: {
               "factorio-custom-${name}-link-${target}" = {
-                source = mkOutOfStoreLink source;
+                source = mkOutOfStoreLink (relativePathApply source);
                 target = "${dataDir}/${target}";
               };
             }
@@ -179,7 +179,7 @@ in {
           links
       )
       cfgInstances;
-    # make custom icons
+    # make custom desktop entries
     xdg.desktopEntries =
       attrsets.concatMapAttrs (
         name: v: let
