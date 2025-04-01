@@ -49,6 +49,7 @@
     piper
     gparted
     alejandra
+    ffmpeg
 
     # qmk
     qmk
