@@ -20,9 +20,9 @@
     enable = true;
   };
 
-  home.packages = with pkgs; [
+  home.packages = with pkgs.unstable; [
     # dev
-    unstable.nodejs
+    nodejs
     pnpm
     yarn
     bun
@@ -51,6 +51,9 @@
     alejandra
     ffmpeg
 
+    # editors
+    zed-editor
+
     # qmk
     qmk
     gcc-arm-embedded
@@ -68,12 +71,12 @@
     obsidian
 
     # video players, kde stuff
-    qmplay2
     kdePackages.dragon
     kdePackages.merkuro
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
+    okteta
 
     handbrake
 
