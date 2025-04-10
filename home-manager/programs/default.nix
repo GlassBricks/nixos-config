@@ -20,9 +20,9 @@
     enable = true;
   };
 
-  home.packages = with pkgs.unstable; [
+  home.packages = with pkgs; [
     # dev
-    nodejs
+    unstable.nodejs
     pnpm
     yarn
     bun
@@ -51,8 +51,7 @@
     alejandra
     ffmpeg
 
-    # editors
-    zed-editor
+    unstable.zed-editor
 
     # qmk
     qmk
