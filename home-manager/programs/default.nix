@@ -67,6 +67,7 @@
     # other applications
     tribler
     spotify
+    spicetify-cli
     obsidian
 
     # video players, kde stuff
