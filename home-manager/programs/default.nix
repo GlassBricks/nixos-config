@@ -1,9 +1,14 @@
 # Misc programs
 # If any config becomes large enough it may move to its own file
-{pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   imports = [
     ./git.nix
     ./vscode.nix
+    ./spicetify.nix
     ./custom-factorio.nix
   ];
 
@@ -50,8 +55,7 @@
     gparted
     alejandra
     ffmpeg
-
-    unstable.zed-editor
+    unzip
 
     # qmk
     qmk
@@ -66,8 +70,6 @@
 
     # other applications
     tribler
-    spotify
-    spicetify-cli
     obsidian
 
     # video players, kde stuff
@@ -82,15 +84,16 @@
 
     # dev
     graphviz
+    unstable.zed-editor
     jetbrains-toolbox
-    (win2xcur.overrideAttrs {
-      src = fetchFromGitHub {
-        owner = "quantum5";
-        repo = "win2xcur";
-        rev = "8e71037f5f90f3cea82a74fe516ee637dea113fa";
-        sha256 = "sha256-4Evd3Aa2gpS2J+vkflV/aQypX419l8gI3Pa39wF9D0U=";
-      };
-    })
+    #    (win2xcur.overrideAttrs {
+    #      src = fetchFromGitHub {
+    #        owner = "quantum5";
+    #        repo = "win2xcur";
+    #        rev = "8e71037f5f90f3cea82a74fe516ee637dea113fa";
+    #        sha256 = "sha256-4Evd3Aa2gpS2J+vkflV/aQypX419l8gI3Pa39wF9D0U=";
+    #      };
+    #    })
   ];
 
   custom.factorio-install = {
