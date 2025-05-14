@@ -105,6 +105,7 @@
       planning = {};
       "stable" = {
         installDir = "opt/factorio-stable";
+        executableName = "factorio-stable";
       };
       "2.0.33" = {
         installDir = "opt/factorio-2.0.33";
