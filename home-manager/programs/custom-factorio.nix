@@ -6,13 +6,10 @@
 }:
 with lib; let
   homeDirectory = config.home.homeDirectory;
-  relativePathApply = p: let
-    absPath =
-      if hasPrefix "/" p
-      then p
-      else "${homeDirectory}/${p}";
-  in
-    absPath;
+  relativePathApply = p:
+    if hasPrefix "/" p
+    then p
+    else "${homeDirectory}/${p}";
   checkName = name: name;
   #    if (builtins.match "^[a-zA-Z0-9_-]+$" name) == null
   #    then abort "Name must be all alphanumeric, - or _"

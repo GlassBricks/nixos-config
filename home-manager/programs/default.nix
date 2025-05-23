@@ -26,36 +26,45 @@
   };
 
   home.packages = with pkgs; [
-    # dev
-    unstable.nodejs
-    pnpm
-    yarn
-    bun
-
-    # utils
-    jq # A lightweight and flexible command-line JSON processor
-    eza # A modern replacement for ‘ls’
+    # utils and cli programs
+    uutils-coreutils-noprefix
     xsel
-    nix-tree
-    ripgrep
     killall
     file
     which
     tree
-    gnutar
+    nix-tree
+    ripgrep
+    bat
+    eza
+    fd
+    fselect
 
-    # misc
+    jq
+    gnutar
+    unzip
 
     btop
+    gitui
+    delta
     zenity
+    yazi
+    hyperfine
+    dua
+    tokei
+    just
+    mask
+    masklint
+    mprocs
+    kondo
 
-    # user programs
-    # utils
+    ffmpeg
+    alejandra
+    ncspot
+
+    # GUI programs
     piper
     gparted
-    alejandra
-    ffmpeg
-    unzip
 
     # qmk
     qmk
@@ -68,32 +77,29 @@
     discord
     vesktop
 
-    # other applications
+    # other programs
     tribler
     obsidian
 
-    # video players, kde stuff
+    # video players,and media stuff
     kdePackages.dragon
     kdePackages.merkuro
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
     okteta
-
     handbrake
 
     # dev
+    unstable.nodejs
+    pnpm
+    yarn
+    bun
     graphviz
+
+    # editors
     unstable.zed-editor
     jetbrains-toolbox
-    #    (win2xcur.overrideAttrs {
-    #      src = fetchFromGitHub {
-    #        owner = "quantum5";
-    #        repo = "win2xcur";
-    #        rev = "8e71037f5f90f3cea82a74fe516ee637dea113fa";
-    #        sha256 = "sha256-4Evd3Aa2gpS2J+vkflV/aQypX419l8gI3Pa39wF9D0U=";
-    #      };
-    #    })
   ];
 
   custom.factorio-install = {
