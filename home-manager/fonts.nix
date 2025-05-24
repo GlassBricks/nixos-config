@@ -6,6 +6,7 @@
     };
   };
   home.packages = with pkgs; [
-    (nerdfonts.override {fonts = ["JetBrainsMono" "DroidSansMono"];})
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.droid-sans-mono
   ];
 }
