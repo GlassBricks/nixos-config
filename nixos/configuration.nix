@@ -85,6 +85,7 @@
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
+    enableIPv6 = false;
   };
 
   # time zone
@@ -167,6 +168,7 @@
     cached-nix-shell
     openrazer-daemon
     polychromatic
+    openvpn
   ];
 
   hardware.openrazer.enable = true;
