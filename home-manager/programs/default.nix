@@ -60,7 +60,8 @@
 
     ffmpeg
     alejandra
-    ncspot
+
+    nix-index
 
     # GUI programs
     piper
@@ -74,12 +75,11 @@
     urn-timer
 
     steam
-    discord
-    vesktop
+    unstable.vesktop
 
     # other programs
     tribler
-    obsidian
+    unstable.obsidian
 
     # video players,and media stuff
     kdePackages.dragon
@@ -92,14 +92,13 @@
 
     # dev
     unstable.nodejs
-    pnpm
-    yarn
     bun
     graphviz
+    ollama-rocm
 
     # editors
     unstable.zed-editor
-    jetbrains-toolbox
+    unstable.jetbrains-toolbox
   ];
 
   custom.factorio-install = {

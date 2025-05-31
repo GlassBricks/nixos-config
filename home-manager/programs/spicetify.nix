@@ -11,6 +11,8 @@ in {
 
   home.packages = [
     (inputs.spicetify-nix.lib.mkSpicetify pkgs.unstable {
+      wayland = true;
+      windowManagerPatch = true;
       enabledExtensions = with spicePkgs.extensions; [
         shuffle
         powerBar
