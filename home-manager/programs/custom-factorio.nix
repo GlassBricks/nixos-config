@@ -10,7 +10,7 @@ with lib; let
     if hasPrefix "/" p
     then p
     else "${homeDirectory}/${p}";
-  checkName = name: name;
+  # checkName = name: name;
   #    if (builtins.match "^[a-zA-Z0-9_-]+$" name) == null
   #    then abort "Name must be all alphanumeric, - or _"
   #    else name;
@@ -180,7 +180,7 @@ in {
     xdg.desktopEntries =
       attrsets.concatMapAttrs (
         name: v: let
-          inherit (v) dataDir installDir commonDir linkCommon displayName;
+          inherit (v) dataDir installDir _commonDir _linkCommon displayName;
         in {
           "factorio-${name}" = {
             name = "Factorio ${displayName}";

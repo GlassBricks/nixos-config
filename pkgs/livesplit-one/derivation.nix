@@ -5,7 +5,7 @@
   makeDesktopItem,
   wrapGAppsHook,
   glib,
-  webkitgtk,
+  webkitgtk_4_1,
   imagemagick,
   autoPatchelfHook,
 }: let
@@ -29,7 +29,7 @@ in
 
     src = fetchurl {
       url = "https://github.com/LiveSplit/LiveSplitOne/releases/download/latest/LiveSplitOne-x86_64-linux.tar.gz";
-      hash = "sha256-e5s8og468n7yP8nKNPT4+x/urVUzgcQ8UGHEDqXhCLM=";
+      hash = "sha256-41HfgdJrL5sIrNuPu5yBwk6jz/zu90FuY6xNHA1fUQY=";
     };
 
     nativeBuildInputs = [
@@ -40,7 +40,7 @@ in
 
     buildInputs = [
       glib
-      webkitgtk
+      webkitgtk_4_1
     ];
 
     sourceRoot = ".";

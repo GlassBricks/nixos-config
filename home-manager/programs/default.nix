@@ -1,10 +1,6 @@
 # Misc programs
 # If any config becomes large enough it may move to its own file
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./git.nix
     ./vscode.nix
@@ -61,11 +57,15 @@
     ffmpeg
     alejandra
 
+    nil
+    nixd
     nix-index
 
-    # GUI programs
+    # Misc GUI programs
     piper
     gparted
+    qbittorrent-enhanced
+    unstable.obsidian
 
     # qmk
     qmk
@@ -77,26 +77,26 @@
     steam
     unstable.vesktop
 
-    # other programs
-    tribler
-    unstable.obsidian
-
     # video players,and media stuff
     kdePackages.dragon
-    kdePackages.merkuro
+    okteta
+    haruna
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
-    okteta
     handbrake
 
     # dev
+    gcc
     unstable.nodejs
     bun
+    python3
+
     graphviz
     ollama-rocm
 
     # editors
+    unstable.neovide
     unstable.zed-editor
     unstable.jetbrains-toolbox
   ];
