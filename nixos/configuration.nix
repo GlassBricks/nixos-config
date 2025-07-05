@@ -118,7 +118,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -222,6 +222,7 @@
     gst_all_1.gst-plugins-ugly
     gst_all_1.gstreamer
     gtk2
+    gtk3
     harfbuzz
     icu
     keyutils.lib
@@ -234,6 +235,7 @@
     libclang.lib
     libdbusmenu
     libdrm
+    libgbm
     libgcrypt
     libgpg-error
     libidn
