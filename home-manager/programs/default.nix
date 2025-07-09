@@ -112,12 +112,6 @@
         installDir = "opt/factorio-stable";
         executableName = "factorio-stable";
       };
-      "2.0.33" = {
-        installDir = "opt/factorio-2.0.33";
-        links = {
-          "saves" = ".factorio/instances/default/saves";
-        };
-      };
       "1.1" = {
         displayName = "1.1";
         executableName = "factorio11";
