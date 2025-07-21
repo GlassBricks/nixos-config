@@ -34,9 +34,9 @@ in {
       ];
       enabledCustomApps = with spicePkgs.apps; [
         #        marketplace
-        #        localFiles
+        localFiles
         #        ncsVisualizer
-        historyInSidebar
+        # historyInSidebar
         betterLibrary
       ];
       theme = spicePkgs.themes.catppuccin;

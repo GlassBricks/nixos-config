@@ -1,5 +1,3 @@
-# Misc programs
-# If any config becomes large enough it may move to its own file
 {pkgs, ...}: {
   imports = [
     ./git.nix
@@ -76,6 +74,7 @@
 
     steam
     unstable.vesktop
+    prismlauncher
 
     # video players,and media stuff
     kdePackages.dragon
