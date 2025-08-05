@@ -85,6 +85,8 @@
     kdePackages.kalgebra
     handbrake
 
+    kdePackages.kio-gdrive
+
     # dev
     gcc
     unstable.nodejs
