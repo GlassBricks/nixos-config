@@ -93,6 +93,8 @@
     bun
     python3
 
+    gnumake42
+
     graphviz
     ollama-rocm
 
@@ -121,7 +123,7 @@
       };
       "1.1-100p-design" = {
         displayName = "1.1 100% Design";
-        installDir = "opt/factorio-1.1";
+        installDir = "opt/factorio-11";
         linkCommon = [];
       };
       "1.1-100p-runs" = {
