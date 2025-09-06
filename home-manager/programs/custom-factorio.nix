@@ -151,7 +151,7 @@ in {
     home.file =
       attrsets.concatMapAttrs (
         name: v: let
-          inherit (v) dataDir installDir commonDir linkCommon links;
+          inherit (v) dataDir commonDir linkCommon links;
         in
           # make a home.files.factorio-custom-${name}-${dirname} for each linkCommon
           (attrsets.mergeAttrsList (map (
@@ -180,7 +180,7 @@ in {
     xdg.desktopEntries =
       attrsets.concatMapAttrs (
         name: v: let
-          inherit (v) dataDir installDir _commonDir _linkCommon displayName;
+          inherit (v) dataDir installDir displayName;
         in {
           "factorio-${name}" = {
             name = "Factorio ${displayName}";
