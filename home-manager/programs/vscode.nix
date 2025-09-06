@@ -1,6 +1,6 @@
-{pkgs, ...}: {
+{pkgs, lib, ...}: {
   programs.vscode = {
     enable = true;
-    package = pkgs.unstable.vscode;
+    package = lib.mkForce pkgs.unstable.vscode.fhs;
   };
 }

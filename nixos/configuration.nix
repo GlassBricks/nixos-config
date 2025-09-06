@@ -15,12 +15,14 @@
 
     # Or modules from other flakes (such as nixos-hardware):
     # inputs.hardware.nixosModules.common-cpu-amd
+    inputs.nix-index-database.nixosModules.nix-index
 
     # You can also split up your configuration and import pieces of it here:
     # ./users.nix
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
+    ./hydenix.nix
   ];
   hardware.enableRedistributableFirmware = true;
 
@@ -33,7 +35,6 @@
       outputs.overlays.unstable-packages
 
       # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
 
       # Or define it inline, for example:
       # (final: prev: {
@@ -78,8 +79,10 @@
   };
 
   # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
   # networking
   networking = {
@@ -101,10 +104,12 @@
     videoDrivers = ["amdgpu"];
   };
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  #  services.displayManager.sddm.wayland.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+
+  # services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -125,8 +130,8 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    wireplumber.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -144,7 +149,6 @@
     ben = {
       initialPassword = "correcthorsebatterystaple";
       isNormalUser = true;
-      description = "Benjamin";
       extraGroups = ["networkmanager" "wheel" "openrazer"];
       openssh.authorizedKeys.keys = [
         # SSH public key(s) go here
@@ -164,10 +168,8 @@
     xclip
     home-manager
     direnv
-    kdePackages.kde-gtk-config
+    # kdePackages.kde-gtk-config
     cached-nix-shell
-    openrazer-daemon
-    polychromatic
     openvpn
   ];
 
@@ -311,5 +313,5 @@
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.05";
+  system.stateVersion = lib.mkForce "23.05";
 }

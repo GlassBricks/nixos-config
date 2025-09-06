@@ -91,7 +91,7 @@
     gcc
     unstable.nodejs
     bun
-    python3
+    # python3
 
     gnumake42
 

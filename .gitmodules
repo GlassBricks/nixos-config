@@ -1,0 +1,3 @@
+[submodule "hydenix"]
+	path = hydenix
+	url = git@github.com:richen604/hydenix.git

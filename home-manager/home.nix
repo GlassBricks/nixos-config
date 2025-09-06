@@ -1,7 +1,7 @@
 {
-  # inputs,
+  inputs,
   outputs,
-  # lib,
+  lib,
   # config,
   # pkgs,
   ...
@@ -10,6 +10,7 @@
     ./fonts.nix
     ./shell.nix
     ./programs
+    ./hydenix.nix
   ];
 
   nixpkgs = {
@@ -49,5 +50,5 @@
   systemd.user.startServices = "sd-switch";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "24.05";
+  home.stateVersion = lib.mkForce "24.05";
 }
