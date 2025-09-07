@@ -48,6 +48,15 @@ in {
         "One Dark"
         "Timeless Dream"
         "Tokyo Night"
+        "LimeFrenzy"
+        "Breezy Autumn"
+        "Rain Dark"
+        "Tundra"
+        "Synth Wave"
+        "Amethyst-Aura"
+        "Rose Pine"
+        "Green Lush"
+        "Material Sakura"
       ];
     };
   };
