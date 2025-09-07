@@ -28,26 +28,26 @@ in {
       neovim = false;
     };
     hyprland = {
+      # configure these manually
       monitors.enable = false;
       keybindings.enable = false;
-
-      # extraConfig = ''
-      #   decoration {
-      #     rounding = 0
-      #   }
-      #   general {
-      #     gaps_in = 0;
-      #     gaps_out = 0;
-      #   }
-      # '';
     };
 
     theme = {
+      active = "Moonlight";
       themes = [
+        "Catppuccin Macchiato"
         "Catppuccin Mocha"
+        "Cosmic Blue"
         "Decay Green"
+        "Eterenal Artic"
+        "Ice Age"
+        "Moonlight"
+        "Nightbrew"
+        "Nordic Blue"
+        "One Dark"
+        "Timeless Dream"
         "Tokyo Night"
-        "Frosted Glass"
       ];
     };
   };
@@ -61,6 +61,13 @@ in {
     ".config/hypr/userprefs.conf" = {
       source = mkOutOfStoreLink "${homeManagerFilesDir}/hypr/userprefs.conf";
       target = "${homeDirectory}/.config/hypr/userprefs.conf";
+    };
+    ".local/state/hyde/config" = {
+      text = ''
+        WEATHER_LOCATION="Austin"
+      '';
+      mutable = true;
+      force = true;
     };
   };
 
