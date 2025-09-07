@@ -1,4 +1,8 @@
-{inputs, pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   imports = [
     inputs.hydenix.lib.nixOsModules
   ];
@@ -11,14 +15,14 @@
     system.enable = true;
     nix.enable = false;
     sddm.enable = true;
+    audio.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
     networkmanager
     networkmanagerapplet
     networkmanager-openvpn
-    kdePackages.kwallet
-    kdePackages.kwallet-pam
-    kdePackages.kwalletmanager
   ];
+
+  services.gnome.gnome-keyring.enable = true;
 }

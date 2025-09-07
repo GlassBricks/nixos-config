@@ -84,6 +84,11 @@ in {
       bold_font JetBrainsMono Nerd Font
       italic_font JetBrainsMono Nerd Font Light Italic
       bold_italic_font JetBrainsMono Nerd Font Italic
+
+      input_delay 0
+      repaint_delay 2
+      sync_to_monitor no
+      wayland_enable_ime no
     '';
   };
 }
