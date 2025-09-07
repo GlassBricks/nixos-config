@@ -1,5 +1,5 @@
 {
-  inputs,
+  # inputs,
   outputs,
   lib,
   # config,
@@ -10,7 +10,7 @@
     ./fonts.nix
     ./shell.nix
     ./programs
-    ./hydenix.nix
+    ./hydenix-home.nix
   ];
 
   nixpkgs = {

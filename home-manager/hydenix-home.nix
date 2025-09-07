@@ -71,6 +71,10 @@ in {
       source = mkOutOfStoreLink "${homeManagerFilesDir}/hypr/userprefs.conf";
       target = "${homeDirectory}/.config/hypr/userprefs.conf";
     };
+    ".local/share/waybar/layouts/mine.jsonc" = {
+      source = mkOutOfStoreLink "${homeManagerFilesDir}/hypr/waybarlayouts/mine.jsonc";
+      target = "${homeDirectory}/.local/share/waybar/layouts/mine.jsonc";
+    };
     ".local/state/hyde/config" = {
       text = ''
         WEATHER_LOCATION="Austin"
