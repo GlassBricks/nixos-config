@@ -10,23 +10,19 @@
     "$XDG_CONFIG_HOME/waybar/includes/includes.json",
   ],
   // ? Groups per side
-  "modules-left": ["group/leaf-inverse"],
-  "modules-center": ["group/pill#1", "group/pill-in#center", "group/pill#2"],
-  "modules-right": ["group/pill#3", "group/pill#4"],
+  "modules-left": ["group/pill#left"],
+  "modules-center": ["group/pill-in#center", "group/pill#2"],
+  "modules-right": ["group/pill#3", "group/pill#4", "group/pill#5"],
   //  ? Declaring the groups
-  "group/leaf-inverse": {
+  "group/pill#left": {
     // left
     "orientation": "inherit",
-    "modules": ["hyprland/workspaces", "wlr/taskbar"],
+    "modules": ["hyprland/workspaces", "wlr/taskbar", "hyprland/window"],
   },
   // center
-  "group/pill#1": {
-    "orientation": "inherit",
-    "modules": ["custom/hyprsunset", "idle_inhibitor"],
-  },
   "group/pill-in#center": {
     "orientation": "inherit",
-    "modules": ["clock", "custom/updates", "custom/gamemode"],
+    "modules": ["clock", "custom/updates"],
   },
   "group/pill#2": {
     "orientation": "inherit",
@@ -37,15 +33,26 @@
     "modules": [
       "battery",
       "power-profiles-daemon",
+      "backlight",
       "network#bandwidthUpBytes",
       "network#bandwidthDownBytes",
       "custom/gpuinfo",
       "custom/cpuinfo",
+      "cpu",
+      "memory",
       "custom/sensorsinfo",
-      "backlight",
     ],
   },
   "group/pill#4": {
+    "orientation": "inherit",
+    "modules": [
+      "custom/hyprsunset",
+      "idle_inhibitor",
+      "custom/gamemode",
+      "custom/cliphist",
+    ],
+  },
+  "group/pill#5": {
     "orientation": "inherit",
     "modules": [
       "privacy",
@@ -55,7 +62,6 @@
       "pulseaudio#microphone",
       "custom/swaync",
       "custom/dunst",
-      "custom/cliphist",
       "custom/hyde-menu",
       "custom/power",
     ],
