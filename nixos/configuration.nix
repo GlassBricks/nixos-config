@@ -22,7 +22,7 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    ./hydenix-system.nix
+    # ./hydenix-system.nix
   ];
   hardware.enableRedistributableFirmware = true;
 
@@ -109,7 +109,7 @@
     wayland.enable = true;
   };
 
-  # services.desktopManager.plasma6.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
