@@ -10,7 +10,7 @@ in {
   #  ];
 
   home.packages = [
-    (inputs.spicetify-nix.lib.mkSpicetify pkgs.unstable {
+    (inputs.spicetify-nix.lib.mkSpicetify pkgs {
       wayland = true;
       windowManagerPatch = true;
       enabledExtensions = with spicePkgs.extensions; [
