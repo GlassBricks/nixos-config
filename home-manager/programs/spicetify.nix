@@ -16,7 +16,6 @@ in {
       enabledExtensions = with spicePkgs.extensions; [
         shuffle
         powerBar
-        wikify
         betterGenres
         hidePodcasts
         adblock

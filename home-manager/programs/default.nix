@@ -19,6 +19,10 @@
     enable = true;
   };
 
+  programs.bacon = {
+    enable = true;
+  };
+
   home.packages = with pkgs; [
     # utils and cli programs
     uutils-coreutils-noprefix
@@ -89,9 +93,15 @@
 
     # dev
     gcc
+    # clang_19
+    # clang_19.out
+    # llvm_19
+    # mold
     unstable.nodejs
     bun
-    python3
+    pkg-config
+    python3Full
+    rustup
 
     gnumake42
 

@@ -194,7 +194,6 @@
     SDL_image
     SDL_mixer
     SDL_ttf
-    alsa-lib
     at-spi2-atk
     at-spi2-core
     atk
