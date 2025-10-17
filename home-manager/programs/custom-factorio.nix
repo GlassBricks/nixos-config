@@ -64,6 +64,20 @@ with lib; let
       };
     };
   });
+  optimizationWrapper = pkgs.writeScript "factorio-optimization-wrapper" ''
+    #!${pkgs.stdenv.shell}
+    FACTORIO_BINARY=$1
+    shift
+
+    export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
+    export MIMALLOC_RESERVE_HUGE_OS_PAGES=0
+    export MIMALLOC_EAGER_COMMIT_DELAY=4
+    export MIMALLOC_SHOW_STATS=0
+    export MALLOC_ARENA_MAX=1
+    export LD_PRELOAD="$LD_PRELOAD ${pkgs.mimalloc}/lib/libmimalloc.so"
+
+    exec $FACTORIO_BINARY "$@"
+  '';
   launcherScript = pkgs.writeScript "factorio-launcher" ''
     #!${pkgs.stdenv.shell}
     FACTORIO_PATH=$1
@@ -76,20 +90,7 @@ with lib; let
       sed -i "s|^write-data=.*|write-data=$WRITE_PATH|" $CONFIG_FILE
     fi
 
-    # configure mimalloc
-    export MIMALLOC_ALLOW_LARGE_OS_PAGES=1 # Use 2MiB pages
-    export MIMALLOC_RESERVE_HUGE_OS_PAGES=0 # Reserve n 1GiB pages
-    export MIMALLOC_EAGER_COMMIT_DELAY=4 # The first 4MiB of allocated memory won't be hugepages
-    #export MIMALLOC_PURGE_DELAY=10 # Delay before purging memory
-    export MIMALLOC_SHOW_STATS=0 # Display mimalloc stats
-
-    #export SDL_VIDEODRIVER=wayland
-
-    export MALLOC_ARENA_MAX=1 # Use only one arena
-    export LD_PRELOAD="$LD_PRELOAD ${pkgs.mimalloc}/lib/libmimalloc.so"
-
-    # run factorio
-    exec $FACTORIO_PATH/bin/x64/factorio -c "$CONFIG_FILE" "$@"
+    exec ${optimizationWrapper} "$FACTORIO_PATH/bin/x64/factorio" -c "$CONFIG_FILE" "$@"
   '';
   configTemplate = ''
     [path]
@@ -198,5 +199,8 @@ in {
         k: v: pkgs.writeScriptBin v.executableName ''exec ${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
       )
       (attrsets.filterAttrs (k: v: v.executableName != null) cfgInstances);
+    home.sessionVariables = {
+      FACTORIO_WRAPPER = "${optimizationWrapper}";
+    };
   };
 }
