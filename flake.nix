@@ -13,11 +13,6 @@
 
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
 
-    hydenix = {
-      url = "path:/home/ben/nixos-config/hydenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";

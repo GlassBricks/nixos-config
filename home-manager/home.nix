@@ -10,7 +10,6 @@
     ./fonts.nix
     ./shell.nix
     ./programs
-    # ./hydenix-home.nix
   ];
 
   nixpkgs = {
