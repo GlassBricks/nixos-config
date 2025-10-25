@@ -61,7 +61,6 @@
 
     nil
     nixd
-    nix-index
 
     # Misc GUI programs
     piper
@@ -77,7 +76,8 @@
     urn-timer
 
     steam
-    unstable.vesktop
+    vesktop
+    unstable.discord
     prismlauncher
 
     # video players,and media stuff

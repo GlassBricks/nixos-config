@@ -190,6 +190,7 @@
     SDL2_image
     SDL2_mixer
     SDL2_ttf
+    sdl3
     SDL_image
     SDL_mixer
     SDL_ttf

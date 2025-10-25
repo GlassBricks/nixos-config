@@ -1,5 +1,9 @@
 # shell, terminal, and custom scripts
-{pkgs, ...}: let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   aliases = {
     ":wq" = "exit";
     "ls" = "exa --group-directories-first --git --icons";
@@ -7,6 +11,10 @@
     "la" = "exa -la --group-directories-first --git --icons";
   };
 in {
+  imports = [
+    inputs.nix-index-database.homeModules.nix-index
+  ];
+
   home.sessionPath = [
     "$HOME/bin"
   ];
@@ -18,9 +26,7 @@ in {
     };
   };
 
-  home.packages = with pkgs; [
-    comma
-  ];
+  programs.nix-index-database.comma.enable = true;
 
   programs.fish = {
     enable = true;
@@ -89,6 +95,8 @@ in {
       repaint_delay 2
       sync_to_monitor no
       wayland_enable_ime no
+
+      disable_focus_reporting yes
     '';
   };
 }
