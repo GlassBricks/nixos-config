@@ -64,6 +64,6 @@
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   hardware.graphics = {
-    extraPackages = with pkgs; [amdvlk];
+    # extraPackages = with pkgs; [];
   };
 }

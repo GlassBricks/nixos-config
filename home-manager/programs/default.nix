@@ -100,7 +100,7 @@
     nodejs_24
     bun
     pkg-config
-    python3Full
+    python314
     rustup
 
     graphviz
