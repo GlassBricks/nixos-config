@@ -56,11 +56,15 @@
     mprocs
     kondo
 
+    gh
+
     ffmpeg
     alejandra
 
     nil
     nixd
+
+    lshw
 
     # Misc GUI programs
     piper
@@ -89,30 +93,28 @@
     kdePackages.kalgebra
     handbrake
 
-    kdePackages.kio-gdrive
+    syncthingtray
+    syncthing
 
     # dev
-    gcc
-    # clang_19
-    # clang_19.out
-    # llvm_19
-    # mold
-    unstable.nodejs
+    nodejs_24
     bun
     pkg-config
     python3Full
     rustup
-
-    gnumake42
 
     graphviz
     ollama-rocm
 
     # editors
     unstable.neovide
-    unstable.zed-editor
+    zed-flake
     unstable.jetbrains-toolbox
   ];
+
+  services.syncthing = {
+    enable = true;
+  };
 
   custom.factorio-install = {
     instances = {
@@ -133,7 +135,7 @@
       };
       "1.1-100p-design" = {
         displayName = "1.1 100% Design";
-        installDir = "opt/factorio-11";
+        installDir = "opt/factorio-1.1";
         linkCommon = [];
       };
       "1.1-100p-runs" = {
