@@ -109,7 +109,8 @@
 
     # editors
     unstable.neovide
-    zed-flake
+    # zed-flake
+    unstable.zed-editor
     unstable.jetbrains-toolbox
   ];
 
