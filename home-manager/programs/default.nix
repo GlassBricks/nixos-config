@@ -86,6 +86,7 @@
 
     # video players,and media stuff
     kdePackages.dragon
+    kdePackages.krohnkite
     okteta
     haruna
     kdePackages.ktimer

@@ -302,7 +302,6 @@
     xz
     zlib
   ];
-  
 
   system.autoUpgrade = {
     enable = true;
