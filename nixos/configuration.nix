@@ -83,10 +83,12 @@
     efi.canTouchEfiVariables = true;
   };
 
-  # networking
   networking = {
     hostName = "nixos";
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+      plugins = [ pkgs.networkmanager-openvpn ];
+    };
     enableIPv6 = false;
   };
 

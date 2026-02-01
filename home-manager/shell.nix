@@ -19,6 +19,10 @@ in {
     "$HOME/bin"
   ];
 
+  home.sessionVariables = {
+    EDITOR = "zeditor --wait";
+  };
+
   home.file = {
     "bin/my-nixos-rebuild" = {
       enable = true;
@@ -79,6 +83,24 @@ in {
       enableFishIntegration = true;
       enableBashIntegration = true;
     };
+    keybindings = {
+      "shift+enter" = "send_text all \\e\\r";
+      "kitty_mod+." = "move_tab_forward";
+      "kitty_mod+," = "move_tab_backward";
+      "ctrl+shift+left" = "neighboring_window left";
+      "ctrl+shift+right" = "neighboring_window right";
+      "ctrl+shift+up" = "neighboring_window up";
+      "ctrl+shift+down" = "neighboring_window down";
+      "ctrl+shift+enter" = "new_window";
+      "ctrl+alt+right" = "launch --location=vsplit --cwd=current";
+      "ctrl+alt+down" = "launch --location=hsplit --cwd=current";
+      "ctrl+alt+shift+left" = "previous_tab";
+      "ctrl+alt+shift+right" = "next_tab";
+      "ctrl+shift+home" = "move_window_backward";
+      "ctrl+shift+end" = "move_window_forward";
+      "ctrl+alt+shift+home" = "move_tab_backward";
+      "ctrl+alt+shift+end" = "move_tab_forward";
+    };
     themeFile = "Catppuccin-Macchiato";
     font = {
       name = "JetBrainsMono Nerd Font Light";
@@ -86,7 +108,7 @@ in {
     };
     extraConfig = ''
       include hyde.conf
-      background_opacity 0.8
+      background_opacity 0.7
       bold_font JetBrainsMono Nerd Font
       italic_font JetBrainsMono Nerd Font Light Italic
       bold_italic_font JetBrainsMono Nerd Font Italic

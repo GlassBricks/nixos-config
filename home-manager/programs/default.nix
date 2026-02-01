@@ -8,7 +8,7 @@
 
   programs.neovim = {
     enable = true;
-    defaultEditor = true;
+    defaultEditor = false;
   };
   programs.java.enable = true;
 
@@ -33,6 +33,7 @@
     tree
     nix-tree
     ripgrep
+    ast-grep
     bat
     eza
     fd
@@ -100,6 +101,7 @@
 
     # dev
     nodejs_24
+    pnpm
     bun
     pkg-config
     python314
