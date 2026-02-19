@@ -61,6 +61,7 @@
       nix-path = config.nix.nixPath;
 
       auto-optimise-store = true;
+      trusted-users = ["root" "@wheel"];
     };
     # Opinionated: disable channels
     #    channel.enable = false;

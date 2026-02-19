@@ -10,7 +10,7 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
-    zed-flake = inputs.zed-editor.packages.${final.stdenv.hostPlatform.system}.default;
+    # zed-flake = inputs.zed-editor.packages.${final.stdenv.hostPlatform.system}.default;
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will

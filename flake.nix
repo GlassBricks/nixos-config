@@ -18,7 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zed-editor.url = "github:zed-industries/zed";
+    # zed-editor.url = "github:zed-industries/zed";
   };
 
   outputs = {

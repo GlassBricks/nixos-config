@@ -14,10 +14,10 @@
 
   programs.obs-studio.enable = true;
 
-  programs.freetube = {
-    package = pkgs.unstable.freetube;
-    enable = true;
-  };
+  # programs.freetube = {
+  #   package = pkgs.unstable.freetube;
+  #   enable = true;
+  # };
 
   programs.bacon = {
     enable = true;
@@ -46,22 +46,19 @@
     btop
     gitui
     delta
-    zenity
-    yazi
     hyperfine
     dua
     tokei
     just
-    mask
-    masklint
-    mprocs
     kondo
+
+    zenity
 
     gh
 
     ffmpeg
-    alejandra
 
+    alejandra
     nil
     nixd
 
@@ -80,9 +77,9 @@
     # games and stuff
     urn-timer
 
-    steam
-    vesktop
-    unstable.discord
+    # steam
+    unstable.vesktop
+    # unstable.discord
     prismlauncher
 
     # video players,and media stuff
@@ -107,12 +104,14 @@
     python314
     rustup
 
+    mold
+    wild
+
     graphviz
     ollama-rocm
 
     # editors
     unstable.neovide
-    # zed-flake
     unstable.zed-editor
     unstable.jetbrains-toolbox
   ];
