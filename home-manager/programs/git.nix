@@ -7,6 +7,7 @@
       url."ssh://git@github.com/".insteadOf = "https://github.com/";
       pull.rebase = true;
       push.autoSetupRemote = true;
+      init.defaultBranch = "main";
     };
   };
 }

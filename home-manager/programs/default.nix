@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./git.nix
-    ./vscode.nix
+    # ./vscode.nix
     ./spicetify.nix
     ./custom-factorio.nix
   ];
@@ -93,8 +93,8 @@
     kdePackages.kalgebra
     handbrake
 
-    syncthingtray
-    syncthing
+    # syncthingtray
+    # syncthing
 
     # dev
     nodejs_24
@@ -116,9 +116,9 @@
     unstable.jetbrains-toolbox
   ];
 
-  services.syncthing = {
-    enable = true;
-  };
+  # services.syncthing = {
+  #   enable = true;
+  # };
 
   custom.factorio-install = {
     instances = {
