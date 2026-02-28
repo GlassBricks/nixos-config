@@ -1,78 +1,56 @@
 #! /usr/bin/env cached-nix-shell
 #! nix-shell -i python3 -p python3
 import subprocess
-import os
 import sys
+import os
 from subprocess import CalledProcessError
+
+os.chdir("/home/ben/nixos-config")
 
 
 def run(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
 
-os.chdir("/home/ben/nixos-config")
+def git_output(cmd):
+    return subprocess.run(cmd, shell=True, capture_output=True).stdout.decode().strip()
 
 
-def has_git_changes():
-    return subprocess.run("git status --porcelain", shell=True, capture_output=True).stdout != b""
+def has_staged_changes():
+    return git_output("git diff --cached --name-only") != ""
 
-had_git_changes = has_git_changes()
-print(had_git_changes)
 
 run("git add .")
 run("alejandra .")
+run("git add .")
 
-made_commit = False
+if not has_staged_changes():
+    print("No changes to commit.")
+    sys.exit(0)
 
-if has_git_changes():
-    if not had_git_changes:
-        run("git commit --amend --no-edit")
-    else:
-        run("git add .")
-        run("git commit")
-        made_commit = True
+run("git commit")
 
-changed_files = subprocess.run("git diff --name-only HEAD^ HEAD", shell=True,
-                               capture_output=True).stdout.decode().splitlines()
+changed_files = git_output("git diff --name-only HEAD^ HEAD").splitlines()
 
-change_all_strs = [
-    "flake.",
-    "modules/",
-    "overlays/",
-    "pkgs/",
-]
-
+change_all_strs = ["flake.", "modules/", "overlays/", "pkgs/"]
 args = sys.argv[1:]
 
 should_update_all = "-a" in args or any(
-    f.startswith(s)
-    for f in changed_files
-    for s in change_all_strs
+    f.startswith(s) for f in changed_files for s in change_all_strs
 )
-
-should_update_nixos = should_update_all or any(
-    f.startswith("nixos/")
-    for f in changed_files
-)
-
-should_update_home = should_update_all or any(
-    f.startswith("home-manager/")
-    for f in changed_files
-)
+should_update_nixos = should_update_all or any(f.startswith("nixos/") for f in changed_files)
+should_update_home = should_update_all or any(f.startswith("home-manager/") for f in changed_files)
 
 print("update nixos:", should_update_nixos)
 print("update home:", should_update_home)
 
-
 try:
     if should_update_nixos:
         run("sudo nixos-rebuild --flake . switch")
-
     if should_update_home:
         run("home-manager --flake . switch")
 except CalledProcessError:
-    if made_commit:
-        run("git reset HEAD^")
+    run("git reset --soft HEAD^")
     raise
 
 run("git push")
