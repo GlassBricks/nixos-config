@@ -78,6 +78,16 @@ in {
     enableFishIntegration = true;
   };
 
+  programs.tmux = {
+    enable = true;
+    mouse = true;
+    keyMode = "vi";
+    baseIndex = 1;
+    escapeTime = 0;
+    terminal = "tmux-256color";
+    historyLimit = 50000;
+  };
+
   programs.kitty = {
     enable = true;
     shellIntegration = {
