@@ -88,7 +88,7 @@
     hostName = "nixos";
     networkmanager = {
       enable = true;
-      plugins = [ pkgs.networkmanager-openvpn ];
+      plugins = [pkgs.networkmanager-openvpn];
     };
     enableIPv6 = false;
   };
