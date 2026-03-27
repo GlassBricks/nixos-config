@@ -90,7 +90,7 @@
       enable = true;
       plugins = [pkgs.networkmanager-openvpn];
     };
-    enableIPv6 = false;
+    enableIPv6 = true;
   };
 
   # time zone
@@ -172,6 +172,8 @@
     # kdePackages.kde-gtk-config
     cached-nix-shell
     openvpn
+    rclone
+    restic
   ];
 
   hardware.openrazer.enable = true;
@@ -305,6 +307,37 @@
     xz
     zlib
   ];
+
+  services.restic.backups.documents = {
+    initialize = true;
+    user = "ben";
+    repository = "rclone:gdrive:restic-backup";
+    passwordFile = "/home/ben/.config/restic/password";
+    rcloneConfigFile = "/home/ben/.config/rclone/rclone.conf";
+    paths = ["/bigdrive/Documents"];
+    exclude = [
+      ".trash"
+      ".debris"
+      ".obsidian/plugins"
+      ".obsidian/themes"
+      "__pycache__"
+      ".smart-env"
+      ".idea"
+      ".ropeproject"
+      ".git"
+      "tmp"
+    ];
+    timerConfig = {
+      OnCalendar = "daily";
+      Persistent = true;
+      RandomizedDelaySec = "1h";
+    };
+    pruneOpts = [
+      "--keep-daily 7"
+      "--keep-weekly 4"
+      "--keep-monthly 6"
+    ];
+  };
 
   system.autoUpgrade = {
     enable = true;
