@@ -49,7 +49,6 @@
     hyperfine
     dua
     tokei
-    just
     kondo
 
     zenity
@@ -102,6 +101,7 @@
     bun
     pkg-config
     python314
+    pipx
     rustup
 
     mold
