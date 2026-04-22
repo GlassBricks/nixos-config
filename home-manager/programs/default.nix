@@ -25,8 +25,11 @@
 
   home.packages = with pkgs; [
     # utils and cli programs
+    bubblewrap
+    socat
     uutils-coreutils-noprefix
     xsel
+    wl-clipboard
     killall
     file
     which
@@ -75,8 +78,10 @@
 
     # games and stuff
     urn-timer
+    unstable.libresplit
 
     # steam
+    chatterino7
     unstable.vesktop
     # unstable.discord
     prismlauncher
@@ -114,6 +119,7 @@
     unstable.neovide
     unstable.zed-editor
     unstable.jetbrains-toolbox
+    unstable.worktrunk
   ];
 
   # services.syncthing = {

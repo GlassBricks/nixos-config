@@ -38,6 +38,21 @@ in {
     shellAliases = aliases;
   };
 
+  xdg.configFile."fish/functions/wt.fish".text = ''
+    function wt
+        command wt config shell init fish | source
+        set -l wt_status $pipestatus[1]
+        set -l source_status $pipestatus[2]
+        test $wt_status -eq 0; or return $wt_status
+        test $source_status -eq 0; or return $source_status
+        wt $argv
+    end
+  '';
+
+  xdg.configFile."fish/completions/wt.fish".text = ''
+    complete --keep-order --exclusive --command wt --arguments "(test -n \"\$WORKTRUNK_BIN\"; or set -l WORKTRUNK_BIN (type -P wt 2>/dev/null); and COMPLETE=fish \$WORKTRUNK_BIN -- (commandline --current-process --tokenize --cut-at-cursor) (commandline --current-token))"
+  '';
+
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -50,6 +65,7 @@ in {
         shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
         exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
       fi
+      if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
     '';
   };
 
