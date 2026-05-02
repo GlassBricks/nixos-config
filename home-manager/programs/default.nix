@@ -30,6 +30,9 @@
     uutils-coreutils-noprefix
     xsel
     wl-clipboard
+    wtype
+    wayland-utils
+    kwin-mcp
     killall
     file
     which
@@ -105,8 +108,11 @@
     pnpm
     bun
     pkg-config
-    python314
-    pipx
+    # python314
+    python313
+    python313Packages.tkinter
+    python313Packages.numpy
+    uv
     rustup
 
     mold
