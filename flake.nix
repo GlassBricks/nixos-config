@@ -1,7 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    # nixpkgs-unstable channel (vs nixos-unstable): same tree, lighter
+    # Hydra gating, typically 1-2 days fresher. Used via the
+    # 'unstable-packages' overlay at 'overlays/default.nix'.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
