@@ -140,6 +140,8 @@ in {
       italic_font JetBrainsMono NF Light Italic
       bold_italic_font JetBrainsMono NF Italic
 
+      disable_ligatures cursor
+
       input_delay 0
       repaint_delay 2
       sync_to_monitor no
