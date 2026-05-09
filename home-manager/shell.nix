@@ -130,15 +130,15 @@ in {
     };
     themeFile = "Catppuccin-Macchiato";
     font = {
-      name = "JetBrainsMono Nerd Font Light";
+      name = "JetBrainsMono NF Light";
       size = 10;
     };
     extraConfig = ''
       include hyde.conf
       background_opacity 0.7
-      bold_font JetBrainsMono Nerd Font
-      italic_font JetBrainsMono Nerd Font Light Italic
-      bold_italic_font JetBrainsMono Nerd Font Italic
+      bold_font JetBrainsMono NF
+      italic_font JetBrainsMono NF Light Italic
+      bold_italic_font JetBrainsMono NF Italic
 
       input_delay 0
       repaint_delay 2

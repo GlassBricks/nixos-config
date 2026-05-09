@@ -2,7 +2,7 @@
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = ["JetBrainsMono Nerd Font Light"];
+      monospace = ["JetBrainsMono NF Light"];
     };
   };
   home.packages = with pkgs; [
