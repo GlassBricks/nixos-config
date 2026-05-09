@@ -27,7 +27,6 @@
     # utils and cli programs
     bubblewrap
     socat
-    uutils-coreutils-noprefix
     xsel
     wl-clipboard
     wtype
