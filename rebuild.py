@@ -3,7 +3,6 @@
 import subprocess
 import sys
 import os
-from subprocess import CalledProcessError
 
 os.chdir("/home/ben/nixos-config")
 
@@ -28,9 +27,7 @@ if not has_staged_changes():
     print("No changes to commit.")
     sys.exit(0)
 
-run("git commit")
-
-changed_files = git_output("git diff --name-only HEAD^ HEAD").splitlines()
+changed_files = git_output("git diff --cached --name-only").splitlines()
 
 change_all_strs = ["flake.", "modules/", "overlays/", "pkgs/"]
 args = sys.argv[1:]
@@ -44,13 +41,16 @@ should_update_home = should_update_all or any(f.startswith("home-manager/") for 
 print("update nixos:", should_update_nixos)
 print("update home:", should_update_home)
 
-try:
-    if should_update_nixos:
-        run("sudo nixos-rebuild --flake . switch")
-    if should_update_home:
-        run("home-manager --flake . switch")
-except CalledProcessError:
-    run("git reset --soft HEAD^")
-    raise
+# Pre-build the home-manager activation package so it can activate from a sealed
+# store path after nixos-rebuild has shifted the system out from under us.
+if should_update_home:
+    run('nix build .#homeConfigurations."ben@nixos".activationPackage -o hm-result')
 
+if should_update_nixos:
+    run("sudo nixos-rebuild --flake . switch")
+
+if should_update_home:
+    run("./hm-result/activate")
+
+run("git commit")
 run("git push")
