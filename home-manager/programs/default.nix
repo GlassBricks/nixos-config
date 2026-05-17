@@ -24,7 +24,7 @@
   };
 
   home.packages = with pkgs; [
-    # utils and cli programs
+    # --- cli / terminal ---
     bubblewrap
     socat
     xsel
@@ -32,18 +32,20 @@
     wtype
     wayland-utils
     kwin-mcp
+
     killall
     file
     which
     tree
     nix-tree
+    lshw
+
     ripgrep
     ast-grep
     bat
     eza
     fd
     fselect
-
     jq
     gnutar
     unzip
@@ -56,74 +58,62 @@
     tokei
     kondo
 
-    zenity
-
-    gh
-
-    ffmpeg
-
     alejandra
     nil
     nixd
 
-    lshw
+    zenity
+    gh
+    ffmpeg
 
-    # Misc GUI programs
+    # --- desktop / gui ---
     piper
     gparted
     qbittorrent-enhanced
     unstable.obsidian
+    handbrake
 
-    # qmk
-    qmk
-    gcc-arm-embedded
-
-    # games and stuff
-    urn-timer
-    unstable.libresplit
-
-    # steam
-    chatterino7
-    unstable.vesktop
-    # unstable.discord
-    prismlauncher
-
-    # video players,and media stuff
     kdePackages.dragon
     kdePackages.kconfig
     kdePackages.krohnkite
-    okteta
-    haruna
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
-    handbrake
+    haruna
+    okteta
 
-    # syncthingtray
-    # syncthing
+    # --- games ---
+    chatterino7
+    unstable.vesktop
+    # unstable.discord
 
-    # dev
+    unstable.libresplit
+    prismlauncher
+
+    # --- hardware / peripherals ---
+    qmk
+    gcc-arm-embedded
+
+    # --- development ---
     nodejs_24
     pnpm
     bun
-    pkg-config
-    # python314
+
     python313
     python313Packages.tkinter
     python313Packages.numpy
     uv
+
     rustup
 
+    pkg-config
     mold
     wild
 
     graphviz
     ollama-rocm
 
-    # editors
-    unstable.neovide
     unstable.zed-editor
-    # zed-flake
     unstable.jetbrains-toolbox
     unstable.worktrunk
   ];
