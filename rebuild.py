@@ -6,6 +6,12 @@ import os
 
 os.chdir("/home/ben/nixos-config")
 
+# cached-nix-shell caches a TMPDIR pointing at a nix-shell temp dir that is
+# already gone, breaking nix builds and the home-manager activate step. Drop it
+# so child processes fall back to /tmp.
+for var in ("TMPDIR", "TMP", "TEMPDIR", "TEMP"):
+    os.environ.pop(var, None)
+
 
 def run(cmd):
     subprocess.run(cmd, shell=True, check=True)

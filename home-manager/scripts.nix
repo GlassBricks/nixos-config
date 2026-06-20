@@ -2,8 +2,7 @@
 # mkOutOfStoreSymlink points at the live working-tree source, so edits take effect
 # immediately -- no rebuild per tweak. Scripts needing third-party deps are packaged
 # under pkgs/ instead (see scripts.md).
-{ config, ... }:
-let
+{config, ...}: let
   inherit (config.lib.file) mkOutOfStoreSymlink;
   dir = "${config.home.homeDirectory}/nixos-config/scripts";
   scripts = [
@@ -14,7 +13,8 @@ let
   ];
 in {
   home.file = builtins.listToAttrs (map (name: {
-    name = "bin/${name}";
-    value.source = mkOutOfStoreSymlink "${dir}/${name}";
-  }) scripts);
+      name = "bin/${name}";
+      value.source = mkOutOfStoreSymlink "${dir}/${name}";
+    })
+    scripts);
 }
