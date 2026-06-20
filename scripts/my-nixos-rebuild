@@ -53,14 +53,18 @@ run("git add .")
 run("alejandra .")
 run("git add .")
 
-if not has_staged_changes():
+force = args.all or args.nixos or args.home
+has_changes = has_staged_changes()
+
+if not has_changes and not force:
     print("No changes to commit.")
     sys.exit(0)
 
 changed_files = git_output("git diff --cached --name-only").splitlines()
 
-# Manual flags override detection; otherwise infer targets from changed paths.
-if args.all or args.nixos or args.home:
+# Any rebuild flag forces those targets and overrides detection; otherwise infer
+# targets from changed paths.
+if force:
     should_update_nixos = args.all or args.nixos
     should_update_home = args.all or args.home
 else:
@@ -75,16 +79,17 @@ print("update nixos:", should_update_nixos)
 print("update home:", should_update_home)
 
 # Resolve the commit message up front so the long build runs unattended.
-if args.message is not None:
-    commit_msg = args.message
-elif args.generate:
-    commit_msg = generate_commit_message()
-    print("Generated:", commit_msg)
-else:
-    commit_msg = input("Commit message ('a' = generate with claude, empty = editor): ").strip()
-    if commit_msg.lower() == "a":
+if has_changes:
+    if args.message is not None:
+        commit_msg = args.message
+    elif args.generate:
         commit_msg = generate_commit_message()
         print("Generated:", commit_msg)
+    else:
+        commit_msg = input("Commit message ('a' = generate with claude, empty = editor): ").strip()
+        if commit_msg.lower() == "a":
+            commit_msg = generate_commit_message()
+            print("Generated:", commit_msg)
 
 # Prompt for sudo now so nixos-rebuild does not block mid-build.
 if should_update_nixos:
@@ -101,8 +106,9 @@ if should_update_nixos:
 if should_update_home:
     run("./hm-result/activate")
 
-if commit_msg:
-    subprocess.run(["git", "commit", "-m", commit_msg], check=True)
-else:
-    run("git commit")
-run("git push")
+if has_changes:
+    if commit_msg:
+        subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+    else:
+        run("git commit")
+    run("git push")
