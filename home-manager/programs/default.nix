@@ -4,6 +4,7 @@
     # ./vscode.nix
     ./spicetify.nix
     ./custom-factorio.nix
+    ./libresplit.nix
   ];
 
   programs.neovim = {

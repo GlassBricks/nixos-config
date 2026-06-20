@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Left-click at the cursor, reset the run, then (after a short delay) start it.
 # Bound to a KDE global shortcut only while LibreSplit hotkeys are enabled
-# (see libresplit-hotkeys-on / libresplit-hotkeys-off).
+# (see `streamctl keys` / `streamctl nokeys`).
 set -eu
 
 : "${YDOTOOL_SOCKET:=/run/ydotoold/socket}"
