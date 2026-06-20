@@ -22,7 +22,7 @@ flake.nix              # Single flake entrypoint; one nixosConfiguration "nixos"
 ├── home-manager/
 │   ├── home.nix             # Home Manager entrypoint; imports fonts, shell, scripts, programs
 │   ├── shell.nix            # Fish (primary shell, launched from bash), starship, kitty, tmux, zoxide, carapace
-│   ├── scripts.nix          # Symlinks scripts/ into ~/bin (live, via mkOutOfStoreSymlink)
+│   ├── scripts.nix          # Symlinks scripts/ into ~/.local/bin (live, via mkOutOfStoreSymlink)
 │   ├── fonts.nix
 │   └── programs/
 │       ├── default.nix      # User packages (dev tools, GUI apps, games) and custom module configs
@@ -32,10 +32,9 @@ flake.nix              # Single flake entrypoint; one nixosConfiguration "nixos"
 │       └── custom-factorio.nix
 ├── overlays/default.nix     # Three overlays: additions (custom pkgs), modifications, unstable-packages
 ├── pkgs/                    # Custom package derivations (accessible as overlays via `additions`)
-├── scripts/                 # Personal bash/stdlib scripts -> ~/bin (see scripts.md)
+├── scripts/                 # Personal bash/stdlib scripts -> ~/.local/bin (see scripts.md); incl. my-nixos-rebuild (build/deploy)
 ├── scripts.md               # Where personal scripts live + how to develop them
-├── modules/                 # Reusable NixOS and Home Manager modules
-└── rebuild.py               # Build/deploy script
+└── modules/                 # Reusable NixOS and Home Manager modules
 ```
 
 ## Key Patterns

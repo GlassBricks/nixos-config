@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+import argparse
+import subprocess
+import sys
+import os
+
+os.chdir("/home/ben/nixos-config")
+
+# cached-nix-shell caches a TMPDIR pointing at a nix-shell temp dir that is
+# already gone, breaking nix builds and the home-manager activate step. Drop it
+# so child processes fall back to /tmp.
+for var in ("TMPDIR", "TMP", "TEMPDIR", "TEMP"):
+    os.environ.pop(var, None)
+
+
+def run(cmd):
+    subprocess.run(cmd, shell=True, check=True)
+
+
+def git_output(cmd):
+    return subprocess.run(cmd, shell=True, capture_output=True).stdout.decode().strip()
+
+
+def has_staged_changes():
+    return git_output("git diff --cached --name-only") != ""
+
+
+def generate_commit_message():
+    diff = git_output("git diff --cached")
+    prompt = (
+        "Write a concise one-line git commit message (imperative mood, ~70 chars "
+        "max) for these staged changes. Output only the message, nothing else.\n\n"
+        + diff
+    )
+    result = subprocess.run(
+        ["claude", "-p", "--model", "sonnet", prompt],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout.strip()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-a", "--all", action="store_true", help="rebuild both nixos and home")
+parser.add_argument("-n", "--nixos", action="store_true", help="force nixos rebuild")
+parser.add_argument("-H", "--home", action="store_true", help="force home-manager rebuild")
+parser.add_argument("-m", "--message", help="commit message (skip prompt)")
+parser.add_argument("-g", "--generate", action="store_true", help="generate commit message with claude (skip prompt)")
+args = parser.parse_args()
+
+run("git add .")
+run("alejandra .")
+run("git add .")
+
+if not has_staged_changes():
+    print("No changes to commit.")
+    sys.exit(0)
+
+changed_files = git_output("git diff --cached --name-only").splitlines()
+
+# Manual flags override detection; otherwise infer targets from changed paths.
+if args.all or args.nixos or args.home:
+    should_update_nixos = args.all or args.nixos
+    should_update_home = args.all or args.home
+else:
+    change_all_strs = ["flake.", "modules/", "overlays/", "pkgs/"]
+    should_update_all = any(
+        f.startswith(s) for f in changed_files for s in change_all_strs
+    )
+    should_update_nixos = should_update_all or any(f.startswith("nixos/") for f in changed_files)
+    should_update_home = should_update_all or any(f.startswith("home-manager/") for f in changed_files)
+
+print("update nixos:", should_update_nixos)
+print("update home:", should_update_home)
+
+# Resolve the commit message up front so the long build runs unattended.
+if args.message is not None:
+    commit_msg = args.message
+elif args.generate:
+    commit_msg = generate_commit_message()
+    print("Generated:", commit_msg)
+else:
+    commit_msg = input("Commit message ('a' = generate with claude, empty = editor): ").strip()
+    if commit_msg.lower() == "a":
+        commit_msg = generate_commit_message()
+        print("Generated:", commit_msg)
+
+# Prompt for sudo now so nixos-rebuild does not block mid-build.
+if should_update_nixos:
+    run("sudo -v")
+
+# Pre-build the home-manager activation package so it can activate from a sealed
+# store path after nixos-rebuild has shifted the system out from under us.
+if should_update_home:
+    run('nix build .#homeConfigurations."ben@nixos".activationPackage -o hm-result')
+
+if should_update_nixos:
+    run("sudo nixos-rebuild --flake . switch")
+
+if should_update_home:
+    run("./hm-result/activate")
+
+if commit_msg:
+    subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+else:
+    run("git commit")
+run("git push")

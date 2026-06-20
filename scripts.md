@@ -1,12 +1,12 @@
 # Personal scripts
 
-All source lives here in `~/nixos-config`; `~/bin` is just a `$PATH` dir that
+All source lives here in `~/nixos-config`; `~/.local/bin` is just a `$PATH` dir that
 home-manager fills with symlinks. Two homes, split by whether a script needs
 third-party deps.
 
 ## Layout & routing
 
-- `scripts/<name>` -- bash and stdlib-only Python. Symlinked into `~/bin` by
+- `scripts/<name>` -- bash and stdlib-only Python. Symlinked into `~/.local/bin` by
   `home-manager/scripts.nix` via `mkOutOfStoreSymlink`, so edits to the working-tree
   file are live (no rebuild). `#!/usr/bin/env bash` or `#!/usr/bin/env python3`.
 - `pkgs/<name>/` -- anything needing third-party deps. Packaged with nix, installed via
@@ -14,8 +14,8 @@ third-party deps.
 
 Decision rule: **a non-stdlib import -> `pkgs/`; otherwise `scripts/`.**
 
-`~/bin` itself holds no sources anymore (kept as a git repo for history only); the
-symlinks there are home-manager-managed and gitignored.
+`~/.local/bin` holds no sources -- only home-manager-managed symlinks. (The old `~/bin`
+git repo is kept for history only and is no longer on `$PATH`.)
 
 ## Developing (incl. with Claude)
 
@@ -31,7 +31,7 @@ Work in `~/nixos-config` (this repo's CLAUDE.md + this doc cover the workflow).
 
 1. Add the file at `scripts/<name>` (`chmod +x`).
 2. Add `"<name>"` to the `scripts` list in `home-manager/scripts.nix`.
-3. `git add scripts/<name>` and `my-nixos-rebuild` (creates the `~/bin` symlink).
+3. `git add scripts/<name>` and `my-nixos-rebuild` (creates the `~/.local/bin` symlink).
 
 After that first rebuild, edits are live -- no further rebuild needed.
 

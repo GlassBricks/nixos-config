@@ -16,19 +16,12 @@ in {
   ];
 
   home.sessionPath = [
-    "$HOME/bin"
+    "$HOME/.local/bin"
     "$HOME/.npm/bin"
   ];
 
   home.sessionVariables = {
     EDITOR = "zeditor --wait";
-  };
-
-  home.file = {
-    "bin/my-nixos-rebuild" = {
-      enable = true;
-      source = ../rebuild.py;
-    };
   };
 
   programs.nix-index-database.comma.enable = true;
@@ -57,7 +50,7 @@ in {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin:$HOME/.npm/bin:$HOME/.local/share/JetBrains/Toolbox/scripts"
+      export PATH="$PATH:$HOME/go/bin:$HOME/.local/share/JetBrains/Toolbox/scripts"
     '';
     initExtra = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]

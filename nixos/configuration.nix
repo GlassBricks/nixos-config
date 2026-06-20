@@ -188,9 +188,6 @@
 
   programs.noisetorch.enable = true;
 
-  # Wayland input injection for the LibreSplit reset+restart macro (~/bin/libresplit-reset-restart).
-  # Runs ydotoold as a system service (socket /run/ydotoold/socket, group "ydotool");
-  # hardware.uinput loads the kernel module so /dev/uinput exists.
   programs.ydotool.enable = true;
   hardware.uinput.enable = true;
 

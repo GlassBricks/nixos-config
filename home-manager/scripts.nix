@@ -1,4 +1,4 @@
-# Personal bash/stdlib scripts, symlinked into ~/bin (on PATH via home.sessionPath).
+# Personal bash/stdlib scripts, symlinked into ~/.local/bin (on PATH via home.sessionPath).
 # mkOutOfStoreSymlink points at the live working-tree source, so edits take effect
 # immediately -- no rebuild per tweak. Scripts needing third-party deps are packaged
 # under pkgs/ instead (see scripts.md).
@@ -8,12 +8,13 @@
   scripts = [
     "krohnkite-on"
     "libresplit-reset-restart"
+    "my-nixos-rebuild"
     "nix-autobahn-find-libs"
     "streamctl"
   ];
 in {
   home.file = builtins.listToAttrs (map (name: {
-      name = "bin/${name}";
+      name = ".local/bin/${name}";
       value.source = mkOutOfStoreSymlink "${dir}/${name}";
     })
     scripts);
