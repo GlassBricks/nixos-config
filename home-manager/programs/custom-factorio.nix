@@ -196,7 +196,7 @@ in {
       cfgInstances;
     home.packages =
       attrsets.mapAttrsToList (
-        k: v: pkgs.writeScriptBin v.executableName ''exec ${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
+        k: v: pkgs.writeShellScriptBin v.executableName ''exec ${launcherScript} "${v.installDir}" "${v.dataDir}" "$@"''
       )
       (attrsets.filterAttrs (k: v: v.executableName != null) cfgInstances);
     home.sessionVariables = {
