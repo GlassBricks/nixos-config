@@ -14,12 +14,9 @@ third-party deps.
 
 Decision rule: **a non-stdlib import -> `pkgs/`; otherwise `scripts/`.**
 
-`~/.local/bin` holds no sources -- only home-manager-managed symlinks. (The old `~/bin`
-git repo is kept for history only and is no longer on `$PATH`.)
+`~/.local/bin` holds no sources -- only home-manager-managed symlinks.
 
-## Developing (incl. with Claude)
-
-Work in `~/nixos-config` (this repo's CLAUDE.md + this doc cover the workflow).
+## Developing
 
 - `scripts/<name>` -- edit the file; it's already live on `$PATH`. Run it directly.
 - `pkgs/<name>/` (dep-using):
@@ -62,9 +59,8 @@ above, drop it from `scripts/` and `home-manager/scripts.nix`.
 Apply to scripts that drive the KDE session (e.g. `scripts/streamctl`).
 
 - **The agent shell cannot reach the live session bus** (`/run/user/1000/bus` is
-  namespaced away; `busctl --user` fails even with sandbox off). KDE D-Bus / `qdbus` /
-  `kwriteconfig6`-effect scripts can only be syntax/logic-checked by the agent -- the
-  user must run and report.
+  namespaced away). KDE D-Bus / `qdbus` / `kwriteconfig6`-effect scripts can only be
+  syntax/logic-checked by the agent -- the user must run and report.
 - **A malformed D-Bus message to `org.kde.kglobalaccel` aborts the whole process.** On
   Wayland kglobalacceld runs inside KWin, so a bad signature crashes the session (lost
   work). Never guess a signature: verify against KDE source or `busctl introspect`.

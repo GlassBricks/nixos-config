@@ -12,6 +12,8 @@ Personal NixOS + Home Manager flake configuration for a single host (`nixos`) an
 - **Check flake**: `nix flake check`
 - **Update inputs**: `nix flake update`
 
+Ad-hoc tooling is fine: `nix-shell -p <pkg>` or `, <cmd>` (comma) to run a one-off tool (e.g. debugging utilities) without adding it to the config.
+
 ## Architecture
 
 ```
