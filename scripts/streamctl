@@ -3,21 +3,22 @@
 
 Additive token bag - list any actions to run; `up`/`down` are bundle aliases.
 
-  Groups   up   = spawn place minimize keys     (old stream-setup + libresplit-hotkeys-on)
-           down = close kill nokeys             (old stream-close  + libresplit-hotkeys-off)
+  Groups   up   = factorio spawn place minimize keys   (old stream-setup + libresplit-hotkeys-on)
+           down = close kill nokeys                    (old stream-close  + libresplit-hotkeys-off)
 
-  Actions  spawn     launch the stream apps
+  Actions  factorio  launch factorio (default instance, before OBS)
+           spawn     launch the stream apps
            place     place windows across monitors
            minimize  minimize extra windows
            close     close stream windows via KWin
-           kill      kill orphan procs (toolkit, vesktop, obs)
+           kill      kill orphan procs (factorio, toolkit, vesktop, obs)
            keys      bind libresplit hotkeys (ON)
            nokeys    unbind libresplit hotkeys (OFF)
 
 Layout (place):
   OUT1 (DP-3, left)   : gw | chat | ff1                - equal thirds
   OUT2 (DP-1, center) : untouched
-  OUT3 (DP-2, right)  : kit  ff3 / obs  vesk           - quarters
+  OUT3 (DP-2, right)  : left col kit(20%) over obs(80%); right col vesk(1/3) over ff3(2/3)
                         + libresplit floating upper-left
   Other windows on OUT1 & OUT3 minimized.
 
@@ -45,7 +46,7 @@ OUT1, OUT2, OUT3 = "DP-3", "DP-1", "DP-2"
 KITTY_CLASS = "stream-bg-factorio"
 SPLIT_W, SPLIT_H = 300, 430
 TIMEOUT = 25
-UNMIN_DELAY = 0.4
+KWIN_TIMEOUT = 5.0  # backstop per KWin script run; the end sentinel ends it sooner
 GEOM_TOL = 40  # px; Krohnkite re-tiling moves windows far more than this
 
 STREAM_IMAGE  = HOME / "Documents/Factorio/RSNG+/queue1.png"
@@ -55,12 +56,28 @@ STREAM_TWITCH = "https://dashboard.twitch.tv/u/glassbricks/stream-manager"
 BG_DIR        = HOME / "opt/factorio-preview-toolkit-linux-v0.1.74"
 BG_CMD        = "./factorio-preview-toolkit"
 
-# ff3 (twitch) before ff1 -> claim-by-caption first, ff1 = remaining firefox
+# `factorio` on PATH is the default-instance launcher (same optimization wrapper
+# + opt/factorio / instances/default paths as the default .desktop entry).
+# FACTORIO_PAT matches that instance's running binary specifically, so other
+# factorio instances are not caught by spawn/kill.
+FACTORIO_PAT  = r"opt/factorio/bin/x64/factorio"
+
+# Stream firefox runs in its own profile + process so it never merges with, or
+# closes, personal browsing. Wayland firefox ignores --class for the WM (windows
+# still report resourceClass "firefox"), so it is kept purely as a unique cmdline
+# marker for pgrep, and windows are matched by pid, not class. session restore is
+# disabled via the profile's user.js, so it only ever shows the URLs below.
+STREAM_FF_PROFILE = "stream"
+STREAM_FF_MARKER  = "--class=stream-ff"
+
+# ff3 (twitch) before ff1 -> claim twitch by caption first, ff1 = the remaining
+# stream firefox window. streamFf: restrict the match to stream-profile pids.
 TARGETS = [
     {"id": "gw",    "out": OUT1, "cls": "org.kde.gwenview"},
     {"id": "chat",  "out": OUT1, "clsRe": "chatterino"},
-    {"id": "ff3",   "out": OUT3, "cls": "firefox", "capRe": "twitch"},
-    {"id": "ff1",   "out": OUT1, "cls": "firefox"},
+    {"id": "ff3",   "out": OUT3, "cls": "firefox", "streamFf": True,
+     "capRe": "creator dashboard|twitch"},
+    {"id": "ff1",   "out": OUT1, "cls": "firefox", "streamFf": True},
     {"id": "vesk",  "out": OUT3, "cls": "vesktop"},
     {"id": "obs",   "out": OUT3, "clsRe": "obsproject"},
     {"id": "kit",   "out": OUT3, "cls": KITTY_CLASS},
@@ -78,7 +95,8 @@ HOTKEY_BINDINGS = [
     ("libresplit-resetrestart.desktop", "LibreSplit Reset+Restart", 16777267),  # F4
 ]
 
-# close: window classes belonging to the stream layout
+# close: window classes belonging to the stream layout. firefox is a candidate by
+# class but gated by pid (stream profile only) so personal browsing is never closed.
 CLOSE_CLASS_RE = "gwenview|chatterino|firefox|vesktop|obsproject|stream-bg-factorio|libresplit"
 
 logging.basicConfig(
@@ -95,6 +113,7 @@ function match(w, t) {
   if (t.cls && w.resourceClass !== t.cls) return false;
   if (t.clsRe && !new RegExp(t.clsRe, 'i').test(w.resourceClass)) return false;
   if (t.capRe && !new RegExp(t.capRe, 'i').test(w.caption)) return false;
+  if (t.pids && t.pids.indexOf(w.pid) === -1) return false;
   return true;
 }
 """
@@ -102,13 +121,35 @@ function match(w, t) {
 _call = 0
 
 
-def kwin_run(js: str, wait: float = 0.5) -> list[str]:
-    """Run KWin JS, return STREAM:-prefixed print() lines from journal."""
+def _parse_stream(out: str, sentinel: str) -> tuple[list[str], bool]:
+    """Pull STREAM: lines out of journal text; stop at (and flag) the sentinel."""
+    lines: list[str] = []
+    for raw in out.splitlines():
+        s = raw.replace("\t", "").strip()
+        if s.startswith("js: "):
+            s = s[4:]
+        if not s.startswith("STREAM:"):
+            continue
+        s = s[len("STREAM:"):].strip()
+        if s == sentinel:
+            return lines, True
+        lines.append(s)
+    return lines, False
+
+
+def kwin_run(js: str, timeout: float = KWIN_TIMEOUT) -> list[str]:
+    """Run KWin JS, return STREAM:-prefixed print() lines from journal.
+
+    print() output lands in the kwin journal asynchronously, so we append a
+    unique end sentinel and poll the journal until it appears, instead of
+    sleeping a fixed guess. `timeout` is the backstop if it never arrives.
+    """
     global _call
     _call += 1
-    path = f"/tmp/stream-kwin-{os.getpid()}.js"
-    Path(path).write_text(JS_HELPERS + "\n" + js)
     name = f"streamctl-{os.getpid()}-{_call}"
+    sentinel = f"__END__ {name}"
+    path = f"/tmp/stream-kwin-{os.getpid()}.js"
+    Path(path).write_text(JS_HELPERS + "\n" + js + f"\nprint('STREAM: {sentinel}');\n")
     since = int(time.time())
     sid = ""
     try:
@@ -126,12 +167,20 @@ def kwin_run(js: str, wait: float = 0.5) -> list[str]:
              "org.kde.kwin.Script.run"],
             capture_output=True,
         )
-        time.sleep(wait)
-        out = subprocess.run(
-            ["journalctl", "--user-unit", "plasma-kwin_wayland.service",
-             "--since", f"@{since}", "-o", "cat", "--no-pager"],
-            capture_output=True, text=True,
-        ).stdout
+        deadline = time.monotonic() + timeout
+        while True:
+            out = subprocess.run(
+                ["journalctl", "--user-unit", "plasma-kwin_wayland.service",
+                 "--since", f"@{since}", "-o", "cat", "--no-pager"],
+                capture_output=True, text=True,
+            ).stdout
+            lines, seen = _parse_stream(out, sentinel)
+            if seen:
+                return lines
+            if time.monotonic() >= deadline:
+                log.warning("kwin_run: no sentinel within %.1fs (%s)", timeout, name)
+                return lines
+            time.sleep(0.1)
     finally:
         if sid:
             subprocess.run(
@@ -139,15 +188,6 @@ def kwin_run(js: str, wait: float = 0.5) -> list[str]:
                  "org.kde.kwin.Scripting.unloadScript", name],
                 capture_output=True,
             )
-
-    lines: list[str] = []
-    for raw in out.splitlines():
-        s = raw.replace("\t", "").strip()
-        if s.startswith("js: "):
-            s = s[4:]
-        if s.startswith("STREAM:"):
-            lines.append(s[len("STREAM:"):].strip())
-    return lines
 
 
 def kwin_shortcut(name: str) -> None:
@@ -167,28 +207,48 @@ for (const s of workspace.screens) {
 }
 """
     out: dict = {}
-    for line in kwin_run(js, wait=0.2):
+    for line in kwin_run(js):
         if line.startswith("OUT "):
             d = json.loads(line[4:])
             out[d["name"]] = d
     return out
 
 
+def _divide(start: int, size: int, weights: list[int]) -> list[tuple[int, int]]:
+    """Split [start, start+size) into len(weights) segments proportional to the
+    weights. Cumulative rounding keeps segments gap-free and the last edge exact."""
+    total = sum(weights)
+    edges, cum = [start], 0
+    for w in weights:
+        cum += w
+        edges.append(start + size * cum // total)
+    return [(edges[i], edges[i + 1] - edges[i]) for i in range(len(weights))]
+
+
+def _cols(rect: tuple, *weights: int) -> list[tuple]:
+    x, y, w, h = rect
+    return [(cx, y, cw, h) for cx, cw in _divide(x, w, list(weights))]
+
+
+def _rows(rect: tuple, *weights: int) -> list[tuple]:
+    x, y, w, h = rect
+    return [(x, ry, w, rh) for ry, rh in _divide(y, h, list(weights))]
+
+
 def compute_rects(outputs: dict) -> dict:
+    def rect(o):
+        return (o["x"], o["y"], o["w"], o["h"])
+
     o1, o3 = outputs[OUT1], outputs[OUT3]
-    t = o1["w"] // 3
-    t_last = o1["w"] - 2 * t
-    hw, hh = o3["w"] // 2, o3["h"] // 2
-    hw_last, hh_last = o3["w"] - hw, o3["h"] - hh
+    gw, chat, ff1 = _cols(rect(o1), 1, 1, 1)
+    left, right = _cols(rect(o3), 1, 1)
+    kit, obs = _rows(left, 1, 4)        # 20% / 80%
+    vesk, ff3 = _rows(right, 1, 2)      # 1/3 / 2/3
     return {
-        "gw":    (o1["x"],         o1["y"],      t,       o1["h"]),
-        "chat":  (o1["x"] + t,     o1["y"],      t,       o1["h"]),
-        "ff1":   (o1["x"] + 2 * t, o1["y"],      t_last,  o1["h"]),
-        "kit":   (o3["x"],         o3["y"],      hw,      hh),
-        "ff3":   (o3["x"] + hw,    o3["y"],      hw_last, hh),
-        "obs":   (o3["x"],         o3["y"] + hh, hw,      hh_last),
-        "vesk":  (o3["x"] + hw,    o3["y"] + hh, hw_last, hh_last),
-        "split": (o3["x"],         o3["y"],      SPLIT_W, SPLIT_H),
+        "gw": gw, "chat": chat, "ff1": ff1,
+        "kit": kit, "obs": obs,
+        "vesk": vesk, "ff3": ff3,
+        "split": (o3["x"], o3["y"], SPLIT_W, SPLIT_H),
     }
 
 
@@ -204,6 +264,29 @@ def launch(cmd: list[str]) -> None:
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def stream_ff_pids() -> list[int]:
+    """pids of the stream-profile firefox instance, found by its unique cmdline
+    marker (deterministic and stateless -- no pid file to go stale)."""
+    r = subprocess.run(["pgrep", "-f", "--", STREAM_FF_MARKER],
+                       capture_output=True, text=True)
+    return [int(p) for p in r.stdout.split() if p.isdigit()]
+
+
+def stream_targets() -> list[dict]:
+    """TARGETS with the live stream-firefox pids injected, so match() can pin the
+    firefox targets to the stream profile instead of personal browsing."""
+    pids = stream_ff_pids()
+    return [{**t, "pids": pids} if t.get("streamFf") else t for t in TARGETS]
+
+
+def launch_factorio() -> None:
+    log.info("=== factorio ===")
+    if _pids(FACTORIO_PAT):
+        log.info("running: factorio")
+    else:
+        launch(["factorio"])
+
+
 def spawn_apps() -> None:
     log.info("=== spawn ===")
     for name, cmd in [
@@ -217,10 +300,15 @@ def spawn_apps() -> None:
             log.info("running: %s", name)
         else:
             launch(cmd)
-    launch(["firefox", "--new-window", STREAM_FF1])
-    time.sleep(1.2)  # let FF1 window register, so FF2 lands as new tab
-    launch(["firefox", "--new-tab", STREAM_FF2])
-    launch(["firefox", "--new-window", STREAM_TWITCH])
+    if stream_ff_pids():
+        log.info("running: stream firefox")
+    else:
+        # one --no-remote invocation: it can't share an instance across calls, so
+        # all stream windows/tabs are opened here. ff1+ff2 share a window (tabs),
+        # twitch is its own window.
+        launch(["firefox", "-P", STREAM_FF_PROFILE, "--no-remote", STREAM_FF_MARKER,
+                "--new-window", STREAM_FF1, "--new-tab", STREAM_FF2,
+                "--new-window", STREAM_TWITCH])
     launch(["kitty", f"--class={KITTY_CLASS}", "-d", str(BG_DIR),
             "--", "bash", "-c", f"{BG_CMD}; exec bash"])
 
@@ -232,7 +320,7 @@ def activate_on(out: str) -> bool:
     The Krohnkite layout shortcut applies to the *active* screen, so a window on
     `out` must be active before we fire it. Returns True if one was found.
     """
-    targets = [t for t in TARGETS if t["out"] == out]
+    targets = [t for t in stream_targets() if t["out"] == out]
     js = f"""
 const TARGETS = {json.dumps(targets)};
 const all = workspace.windowList().filter(w => w.normalWindow && !w.minimized);
@@ -253,7 +341,7 @@ if (w) {{
 }}
 """
     found = False
-    for line in kwin_run(js, wait=0.3):
+    for line in kwin_run(js):
         log.info("  %s", line)
         if line.startswith(f"FL ok {out}"):
             found = True
@@ -261,18 +349,17 @@ if (w) {{
 
 
 def engage_float(out: str) -> None:
-    """Switch `out` to Krohnkite floating layout (idempotent caller must ensure
-    `out` is NOT already floating -- firing the shortcut when already floating
-    would toggle it back OFF on this fork)."""
+    """Switch `out` to Krohnkite floating layout. Caller must ensure `out` is NOT
+    already floating -- firing the shortcut when already floating would toggle it
+    back OFF on this fork. The place loop re-checks drift after, so no settle here."""
     if activate_on(out):
         kwin_shortcut("KrohnkiteFloatingLayout")
-        time.sleep(UNMIN_DELAY)
 
 
 def place(rects: dict) -> list[str]:
     enriched = [{**t, "rx": rects[t["id"]][0], "ry": rects[t["id"]][1],
                  "rw": rects[t["id"]][2], "rh": rects[t["id"]][3]}
-                for t in TARGETS]
+                for t in stream_targets()]
     js = f"""
 const TARGETS = {json.dumps(enriched)};
 const all = workspace.windowList().filter(w => w.normalWindow);
@@ -295,7 +382,7 @@ for (const t of TARGETS) {{
 print('STREAM: MISS ' + missing.join(','));
 """
     missing: list[str] = []
-    for line in kwin_run(js, wait=0.6):
+    for line in kwin_run(js):
         if line.startswith("MISS "):
             missing = [x for x in line[5:].split(",") if x]
         else:
@@ -307,7 +394,7 @@ def verify(rects: dict) -> list[str]:
     """Read back placed windows; return outputs whose windows drifted from the
     target position (= Krohnkite re-tiled them, i.e. that output isn't floating)."""
     enriched = [{**t, "rx": rects[t["id"]][0], "ry": rects[t["id"]][1]}
-                for t in TARGETS]
+                for t in stream_targets()]
     js = f"""
 const TARGETS = {json.dumps(enriched)};
 const TOL = {GEOM_TOL};
@@ -324,7 +411,7 @@ for (const t of TARGETS) {{
 print('STREAM: DRIFT ' + Array.from(drift).join(','));
 """
     drift: list[str] = []
-    for line in kwin_run(js, wait=0.2):
+    for line in kwin_run(js):
         if line.startswith("DRIFT "):
             drift = [x for x in line[6:].split(",") if x]
         else:
@@ -332,10 +419,29 @@ print('STREAM: DRIFT ' + Array.from(drift).join(','));
     return drift
 
 
+def settle_drift(rects: dict, timeout: float = 2.0) -> list[str]:
+    """Poll verify() until the read-back is stable across two consecutive reads.
+
+    Krohnkite re-tiles within ~a frame of place() setting geometry; a single
+    early read can catch the pre-retile position and miss the drift. Waiting for
+    two equal reads is the real signal that no further reaction is coming --
+    replacing a fixed post-place sleep. Returns the stable drift set (or the last
+    read on timeout)."""
+    deadline = time.monotonic() + timeout
+    prev: list[str] | None = None
+    while time.monotonic() < deadline:
+        cur = verify(rects)
+        if prev is not None and set(cur) == set(prev):
+            return cur
+        prev = cur
+        time.sleep(0.15)
+    return prev or []
+
+
 def minimize_extras() -> None:
     log.info("=== minimize ===")
     js = f"""
-const TARGETS = {json.dumps(TARGETS)};
+const TARGETS = {json.dumps(stream_targets())};
 const TARGET_OUT = new Set({json.dumps(TARGET_OUTS)});
 const all = workspace.windowList().filter(w => w.normalWindow);
 const claimed = new Set();
@@ -346,14 +452,11 @@ for (const t of TARGETS) {{
 let n = 0;
 for (const w of all) {{
   if (claimed.has(w)) continue;
-  const onTarget = w.output && TARGET_OUT.has(w.output.name);
-  if (onTarget || w.resourceClass === 'firefox') {{
-    w.minimized = true; n++;
-  }}
+  if (w.output && TARGET_OUT.has(w.output.name)) {{ w.minimized = true; n++; }}
 }}
 print('STREAM: MIN ' + n);
 """
-    for line in kwin_run(js, wait=0.4):
+    for line in kwin_run(js):
         log.info("  %s", line)
 
 
@@ -378,8 +481,7 @@ def place_phase() -> bool:
         attempt += 1
         log.info("--- attempt %d ---", attempt)
         missing = place(rects)
-        time.sleep(0.6)
-        drift = verify(rects)
+        drift = settle_drift(rects)  # poll until read-back stabilizes
         if not missing and not drift:
             log.info("ALL PLACED")
             return True
@@ -389,7 +491,6 @@ def place_phase() -> bool:
                 engage_float(out)
                 floated.add(out)
         log.info("missing=%s drift=%s, retry", missing, drift)
-        time.sleep(0.5)
     log.warning("TIMEOUT after %d attempts", attempt)
     return False
 
@@ -443,21 +544,38 @@ def find_kitty_pid() -> int:
     return 0
 
 
-def kill_pattern(pattern: str, label: str) -> None:
-    """Kill processes matching `pattern` (pgrep -f), excluding this script."""
+def _pids(pattern: str) -> list[str]:
+    """pids whose full cmdline matches `pattern` (pgrep -f), excluding this script."""
     r = subprocess.run(["pgrep", "-f", pattern], capture_output=True, text=True)
-    pids = [p for p in r.stdout.split() if p and int(p) != os.getpid()]
+    return [p for p in r.stdout.split() if p.isdigit() and int(p) != os.getpid()]
+
+
+def wait_gone(pattern: str, timeout: float = 4.0) -> bool:
+    """Poll until no process matches `pattern`, or timeout. The real signal that
+    a SIGTERM'd process has actually exited, replacing a fixed post-kill sleep."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if not _pids(pattern):
+            return True
+        time.sleep(0.1)
+    return False
+
+
+def kill_pattern(pattern: str, label: str) -> bool:
+    """Kill processes matching `pattern` (pgrep -f). Returns True if any were hit."""
+    pids = _pids(pattern)
     if pids:
         log.info("  kill %s: %s", label, " ".join(pids))
         subprocess.run(["kill", *pids], capture_output=True)
+    return bool(pids)
+
+
+# obs lives in the nix store; match its exact exe path, not the launcher.
+OBS_PAT = r"/nix/store.*/obs$"
 
 
 def kill_obs() -> None:
-    """obs lives in the nix store; match its exact exe path, not the launcher."""
-    r = subprocess.run(["pgrep", "-af", r"/nix/store.*/obs$"],
-                       capture_output=True, text=True)
-    pids = [line.split()[0] for line in r.stdout.splitlines()
-            if line and int(line.split()[0]) != os.getpid()]
+    pids = _pids(OBS_PAT)
     if pids:
         log.info("  kill obs: %s", " ".join(pids))
         subprocess.run(["kill", *pids], capture_output=True)
@@ -469,30 +587,48 @@ def close_windows() -> None:
     js = f"""
 const KITTYPID = {kitty_pid};
 const CLASS_RE = /{CLOSE_CLASS_RE}/i;
+const FF_PIDS = {json.dumps(stream_ff_pids())};
 const wins = workspace.windowList();
 let n = 0;
 for (const w of wins) {{
   if (!w || !w.normalWindow) continue;
   const cls = w.resourceClass || "";
+  const cap = w.caption || "";
   if (!CLASS_RE.test(cls)) {{ print("STREAM: SKIP " + cls); continue; }}
   if (KITTYPID && w.pid === KITTYPID) {{ print("STREAM: SKIP-SELF " + cls); continue; }}
-  print("STREAM: CLOSE " + cls + " cap=\\"" + (w.caption || "") + "\\"");
+  if (cls === "firefox" && FF_PIDS.indexOf(w.pid) === -1) {{
+    print("STREAM: SKIP-FF " + JSON.stringify(cap)); continue;
+  }}
+  print("STREAM: CLOSE " + cls + " cap=\\"" + cap + "\\"");
   w.closeWindow();
   n++;
 }}
 print("STREAM: CLOSE_DONE n=" + n);
 """
-    for line in kwin_run(js, wait=2.0):
+    for line in kwin_run(js):
         if line.startswith(("CLOSE", "SKIP")):
             log.info("  %s", line)
 
 
-def survivors_report() -> None:
+# firefox scoped to the stream marker so personal browsing isn't flagged a survivor
+SURV_PAT = ("gwenview", "chatterino", "libresplit", STREAM_FF_MARKER, "/obs ",
+            "electron", "stream-bg", "factorio-preview", FACTORIO_PAT, "vesktop")
+
+
+def survivors() -> list[str]:
     r = subprocess.run(["ps", "-eo", "pid,comm,args"], capture_output=True, text=True)
-    pat = ("gwenview", "chatterino", "libresplit", "firefox", "/obs ",
-           "electron", "stream-bg", "factorio-preview", "vesktop")
-    surv = [ln for ln in r.stdout.splitlines()
-            if any(p in ln for p in pat) and str(os.getpid()) not in ln.split()[:1]]
+    return [ln for ln in r.stdout.splitlines()
+            if any(p in ln for p in SURV_PAT) and str(os.getpid()) not in ln.split()[:1]]
+
+
+def survivors_report(timeout: float = 5.0) -> None:
+    """Poll until the stream procs have died (or timeout), then report whatever
+    is left -- replaces a blind post-kill sleep with the actual exit signal."""
+    deadline = time.monotonic() + timeout
+    surv = survivors()
+    while surv and time.monotonic() < deadline:
+        time.sleep(0.2)
+        surv = survivors()
     if surv:
         log.info("=== survivors ===")
         for ln in surv:
@@ -503,15 +639,17 @@ def survivors_report() -> None:
 
 # --- Action runner ------------------------------------------------------------
 GROUPS = {
-    "up":   ["spawn", "place", "minimize", "keys"],
+    "up":   ["factorio", "spawn", "place", "minimize", "keys"],
     "down": ["close", "kill", "nokeys"],
 }
-ACTIONS = ["spawn", "place", "minimize", "close", "kill", "keys", "nokeys"]
-# Fixed run order, regardless of token order. `kill` is split so the toolkit
-# pre-kill runs before `close` (lets the bg kitty's shell go idle -> closes
-# without a "still running" confirm) and vesktop/obs are killed after.
-RUN_ORDER = ["spawn", "place", "minimize", "kill", "close", "kill-post",
-             "keys", "nokeys"]
+ACTIONS = ["factorio", "spawn", "place", "minimize", "close", "kill", "keys", "nokeys"]
+# Fixed run order, regardless of token order. `factorio` runs before `spawn` so
+# the game window exists before OBS starts (game-capture source binds it). `kill`
+# is split so the toolkit pre-kill runs before `close` (lets the bg kitty's shell
+# go idle -> closes without a "still running" confirm) and factorio/vesktop/obs
+# are killed after.
+RUN_ORDER = ["factorio", "spawn", "place", "minimize", "kill", "close",
+             "kill-post", "keys", "nokeys"]
 
 
 def expand(tokens: list[str]) -> set[str]:
@@ -531,23 +669,27 @@ def expand(tokens: list[str]) -> set[str]:
 
 def run(selected: set[str]) -> None:
     for step in RUN_ORDER:
-        if step == "spawn" and "spawn" in selected:
+        if step == "factorio" and "factorio" in selected:
+            launch_factorio()
+        elif step == "spawn" and "spawn" in selected:
             spawn_apps()
         elif step == "place" and "place" in selected:
             place_phase()
         elif step == "minimize" and "minimize" in selected:
             minimize_extras()
         elif step == "kill" and "kill" in selected:
-            # pre-kill the preview toolkit before closing its kitty
-            kill_pattern("factorio-preview-toolkit", "factorio-preview-toolkit")
-            time.sleep(0.5)
+            # pre-kill the preview toolkit before closing its kitty, then wait for
+            # it to actually exit so the bg kitty's shell goes idle (-> close won't
+            # hit a "still running" confirm)
+            if kill_pattern("factorio-preview-toolkit", "factorio-preview-toolkit"):
+                wait_gone("factorio-preview-toolkit", timeout=3)
         elif step == "close" and "close" in selected:
             close_windows()
         elif step == "kill-post" and "kill" in selected:
             kill_pattern("vesktop", "vesktop")
             kill_obs()
-            time.sleep(3)
-            survivors_report()
+            kill_pattern(FACTORIO_PAT, "factorio")
+            survivors_report()  # polls for actual exit before reporting
         elif step == "keys" and "keys" in selected:
             hotkeys(True)
         elif step == "nokeys" and "nokeys" in selected:
