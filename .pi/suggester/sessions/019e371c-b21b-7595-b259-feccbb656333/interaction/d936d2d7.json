@@ -1,0 +1,14 @@
+{
+  "stateVersion": 9,
+  "lastSuggestion": {
+    "text": "show me an example of using kwriteconfig6 to add a custom shortcut that runs a command",
+    "shownAt": "2026-05-17T18:05:22.429Z",
+    "turnId": "d936d2d7",
+    "sourceLeafId": "d936d2d7",
+    "variantName": "default",
+    "strategy": "compact",
+    "requestedStrategy": "compact"
+  },
+  "steeringHistory": [],
+  "turnsSinceLastStalenessCheck": 1
+}

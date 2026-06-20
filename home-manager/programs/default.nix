@@ -32,6 +32,7 @@
     wtype
     wayland-utils
     kwin-mcp
+    pdf2md
 
     killall
     file

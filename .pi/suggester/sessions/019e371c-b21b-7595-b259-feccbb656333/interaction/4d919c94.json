@@ -1,0 +1,22 @@
+{
+  "stateVersion": 9,
+  "pendingNextTurnObservation": {
+    "suggestionTurnId": "d936d2d7",
+    "suggestionShownAt": "2026-05-17T18:05:22.429Z",
+    "userPromptSubmittedAt": "2026-05-17T18:05:51.221Z",
+    "variantName": "default",
+    "strategy": "compact",
+    "requestedStrategy": "compact"
+  },
+  "steeringHistory": [
+    {
+      "turnId": "d936d2d7",
+      "suggestedPrompt": "show me an example of using kwriteconfig6 to add a custom shortcut that runs a command",
+      "actualUserPrompt": "look again",
+      "classification": "changed_course",
+      "similarity": 0.07291666666666667,
+      "timestamp": "2026-05-17T18:05:51.221Z"
+    }
+  ],
+  "turnsSinceLastStalenessCheck": 1
+}

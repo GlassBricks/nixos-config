@@ -49,6 +49,15 @@
     # Your custom packages
     # Accessible through 'nix build', 'nix shell', etc
     packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
+    # Dev shells for fast script iteration (deps without rebuilding), e.g.
+    # 'nix develop .#pdf2md' then run the live ./pkgs/pdf2md/pdf2md.py.
+    devShells = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      pdf2md = pkgs.mkShell {
+        packages = [(pkgs.python3.withPackages (import ./pkgs/pdf2md/python-deps.nix))];
+      };
+    });
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);

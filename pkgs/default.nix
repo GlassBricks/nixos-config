@@ -4,4 +4,5 @@ pkgs: {
   # example = pkgs.callPackage ./example { };
   livesplit-one = pkgs.callPackage ./livesplit-one/derivation.nix {};
   kwin-mcp = pkgs.callPackage ./kwin-mcp {};
+  pdf2md = pkgs.callPackage ./pdf2md {};
 }

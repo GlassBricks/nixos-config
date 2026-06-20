@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "019e371c-b21b-7595-b259-feccbb656333",
+  "sessionFile": "/home/ben/.pi/agent/sessions/--home-ben-nixos-config--/2026-05-17T18-04-48-027Z_019e371c-b21b-7595-b259-feccbb656333.jsonl",
+  "cwd": "/home/ben/nixos-config",
+  "ignoreLegacyPiSessionEntries": true,
+  "legacyMigration": {
+    "performedAt": "2026-05-17T18:04:49.231Z",
+    "importedLegacyEntries": false,
+    "legacyStateEntryCount": 0,
+    "legacyUsageEntryCount": 0,
+    "note": "Legacy suggester-state/suggester-usage pi session entries were imported once into extension-owned storage and are ignored afterwards."
+  }
+}

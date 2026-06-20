@@ -1,0 +1,31 @@
+{
+  "stateVersion": 9,
+  "lastSuggestion": {
+    "text": "run the awk",
+    "shownAt": "2026-05-17T18:06:05.938Z",
+    "turnId": "6f19f269",
+    "sourceLeafId": "6f19f269",
+    "variantName": "default",
+    "strategy": "compact",
+    "requestedStrategy": "compact"
+  },
+  "steeringHistory": [
+    {
+      "turnId": "d936d2d7",
+      "suggestedPrompt": "show me an example of using kwriteconfig6 to add a custom shortcut that runs a command",
+      "actualUserPrompt": "look again",
+      "classification": "changed_course",
+      "similarity": 0.07291666666666667,
+      "timestamp": "2026-05-17T18:05:51.221Z"
+    },
+    {
+      "turnId": "6f19f269",
+      "suggestedPrompt": "run that awk",
+      "actualUserPrompt": "whats in khtokeys now",
+      "classification": "changed_course",
+      "similarity": 0.18181818181818182,
+      "timestamp": "2026-05-17T18:06:32.630Z"
+    }
+  ],
+  "turnsSinceLastStalenessCheck": 1
+}

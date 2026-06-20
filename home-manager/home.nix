@@ -9,6 +9,7 @@
   imports = [
     ./fonts.nix
     ./shell.nix
+    ./scripts.nix
     ./programs
   ];
 

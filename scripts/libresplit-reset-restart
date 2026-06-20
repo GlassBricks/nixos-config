@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Left-click at the cursor, reset the run, then (after a short delay) start it.
+# Bound to a KDE global shortcut only while LibreSplit hotkeys are enabled
+# (see libresplit-hotkeys-on / libresplit-hotkeys-off).
+set -eu
+
+: "${YDOTOOL_SOCKET:=/run/ydotoold/socket}"
+export YDOTOOL_SOCKET
+
+ctl=/home/ben/.nix-profile/bin/libresplit-ctl
+delay="${LIBRESPLIT_RESTART_DELAY:-0.01}"
+
+ydotool click 0xC0      # left press+release at current cursor position
+"$ctl" stoporreset
+sleep "$delay"
+"$ctl" cancel
+sleep "$delay"
+"$ctl" startorsplit
