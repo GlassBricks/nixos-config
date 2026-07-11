@@ -10,6 +10,7 @@
     "libresplit-reset-restart"
     "my-nixos-rebuild"
     "nix-autobahn-find-libs"
+    "speedrun-submit"
     "streamctl"
   ];
 in {

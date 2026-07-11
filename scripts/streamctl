@@ -15,13 +15,6 @@ Additive token bag - list any actions to run; `up`/`down` are bundle aliases.
            keys      bind libresplit hotkeys (ON)
            nokeys    unbind libresplit hotkeys (OFF)
 
-Layout (place):
-  OUT1 (DP-3, left)   : gw | chat | ff1                - equal thirds
-  OUT2 (DP-1, center) : untouched
-  OUT3 (DP-2, right)  : left col kit(20%) over obs(80%); right col vesk(1/3) over ff3(2/3)
-                        + libresplit floating upper-left
-  Other windows on OUT1 & OUT3 minimized.
-
 Examples:
   streamctl up                 full setup + hotkeys ON
   streamctl down               close + kill orphans + hotkeys OFF
@@ -56,11 +49,12 @@ STREAM_TWITCH = "https://dashboard.twitch.tv/u/glassbricks/stream-manager"
 BG_DIR        = HOME / "opt/factorio-preview-toolkit-linux-v0.1.74"
 BG_CMD        = "./factorio-preview-toolkit"
 
-# `factorio` on PATH is the default-instance launcher (same optimization wrapper
-# + opt/factorio / instances/default paths as the default .desktop entry).
-# FACTORIO_PAT matches that instance's running binary specifically, so other
-# factorio instances are not caught by spawn/kill.
-FACTORIO_PAT  = r"opt/factorio/bin/x64/factorio"
+# `factorio-stable` on PATH is the stable-instance launcher (same optimization
+# wrapper + opt/factorio-stable / instances/stable paths as the stable .desktop
+# entry). FACTORIO_PAT matches that instance's running binary specifically, so
+# other factorio instances are not caught by spawn/kill.
+FACTORIO_BIN  = "factorio-stable"
+FACTORIO_PAT  = r"opt/factorio-stable/bin/x64/factorio"
 
 # Stream firefox runs in its own profile + process so it never merges with, or
 # closes, personal browsing. Wayland firefox ignores --class for the WM (windows
@@ -216,7 +210,17 @@ for (const s of workspace.screens) {
 
 def _divide(start: int, size: int, weights: list[int]) -> list[tuple[int, int]]:
     """Split [start, start+size) into len(weights) segments proportional to the
-    weights. Cumulative rounding keeps segments gap-free and the last edge exact."""
+    weights. Cumulative rounding keeps segments gap-free and the last edge exact.
+
+    One weight may be negative: its magnitude is the intended grand total, and the
+    slot takes whatever the other weights leave (e.g. 30, -100, 40 -> 30, 30, 40)."""
+    negs = [i for i, w in enumerate(weights) if w < 0]
+    if len(negs) > 1:
+        raise ValueError(f"_divide: at most one negative weight, got {weights}")
+    if negs:
+        i = negs[0]
+        weights = list(weights)
+        weights[i] = -weights[i] - sum(w for j, w in enumerate(weights) if j != i)
     total = sum(weights)
     edges, cum = [start], 0
     for w in weights:
@@ -240,10 +244,10 @@ def compute_rects(outputs: dict) -> dict:
         return (o["x"], o["y"], o["w"], o["h"])
 
     o1, o3 = outputs[OUT1], outputs[OUT3]
-    gw, chat, ff1 = _cols(rect(o1), 1, 1, 1)
+    gw, chat, ff1 = _cols(rect(o1), 30, 30, 40)
     left, right = _cols(rect(o3), 1, 1)
-    kit, obs = _rows(left, 1, 4)        # 20% / 80%
-    vesk, ff3 = _rows(right, 1, 2)      # 1/3 / 2/3
+    kit, obs = _rows(left, 1, 4)
+    vesk, ff3 = _rows(right, 1, 2)
     return {
         "gw": gw, "chat": chat, "ff1": ff1,
         "kit": kit, "obs": obs,
@@ -284,7 +288,7 @@ def launch_factorio() -> None:
     if _pids(FACTORIO_PAT):
         log.info("running: factorio")
     else:
-        launch(["factorio"])
+        launch([FACTORIO_BIN])
 
 
 def spawn_apps() -> None:

@@ -1,0 +1,293 @@
+#!/usr/bin/env python3
+"""Assemble a speedrun.com submission from the latest run: time, save, VOD, links.
+
+Collects everything needed to submit a Factorio: Space Age run and prints one
+copy-pasteable block:
+
+  - Time    from libresplit's latest run (PB fallback if it was a reset)
+  - Save    latest manual save, uploaded to Google Drive (rclone), public link
+  - VOD     latest Twitch archive; prints its URL jumped near the run's start
+  - Submit  speedrun.com category page
+
+Twitch's public API cannot create highlights, so the Twitch video producer is opened
+in the browser for manual highlighting; the VOD URL (jumped near run start) and the
+per-VOD highlighter URL are printed.
+
+Twitch creds live in ~/.config/speedrun-submit/config.json (gitignored location):
+  { "twitch": { "client_id": "...", "client_secret": "...", "login": "glassbricks" } }
+Register an app at https://dev.twitch.tv/console (client-credentials, no scopes).
+
+Examples:
+  speedrun-submit                       full run for the default category
+  speedrun-submit --no-upload --no-twitch   just read and print the time
+  speedrun-submit --vod-offset 3720     override the VOD start guess (seconds)
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import math
+import re
+import subprocess
+import sys
+import urllib.parse
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+HOME = Path.home()
+CONFIG_PATH = HOME / ".config/speedrun-submit/config.json"
+VOD_LEAD = 15  # seconds of slack before the computed run start, to land just early
+
+CATEGORIES = {
+    "RSNG+": {
+        "display": "Factorio: Space Age - RSNG+",
+        "save_dir": HOME / ".factorio/instances/default/saves/RSNG+",
+        "splits_file": HOME / ".config/libresplit/splits/RSNG+/RSNG+.json",
+        "runs_dir": HOME / ".config/libresplit/runs",
+        "gdrive_folder": "gdrive:factorio saves/RSNG+",
+        "src_url": "https://www.speedrun.com/Space_Age/runs/new?h=random-seed-new-game&x=jdzmlwrk",
+        "show_ms": False,  # Space_Age leaderboard shows whole seconds; submissions floor
+    },
+}
+DEFAULT_CATEGORY = "RSNG+"
+
+log = logging.getLogger("speedrun-submit")
+
+
+# --- time parsing ---------------------------------------------------------
+
+def parse_time(raw: str) -> float:
+    """libresplit time string ('H:MM:SS.ffffff' / 'M:SS.ff' / 'SS.ff') -> seconds."""
+    parts = raw.split(":")
+    seconds = float(parts[-1])
+    if len(parts) >= 2:
+        seconds += int(parts[-2]) * 60
+    if len(parts) >= 3:
+        seconds += int(parts[-3]) * 3600
+    return seconds
+
+
+def format_time(seconds: float, ms: bool = True) -> str:
+    """Seconds -> 'H:MM:SS.mmm', or ceiled 'H:MM:SS' when ms is False.
+
+    Space_Age has show-milliseconds off; speedrun.com rounds such times up.
+    """
+    if not ms:
+        seconds = math.ceil(seconds)
+    h, rem = divmod(seconds, 3600)
+    m, s = divmod(rem, 60)
+    if ms:
+        return f"{int(h)}:{int(m):02d}:{s:06.3f}"
+    return f"{int(h)}:{int(m):02d}:{int(s):02d}"
+
+
+def format_offset(seconds: float) -> str:
+    """Seconds -> Twitch '?t=' form, e.g. '1h2m3s'."""
+    h, rem = divmod(int(seconds), 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}h{m}m{s}s"
+
+
+def parse_twitch_duration(dur: str) -> float:
+    """Helix duration ('3h47m27s', '47m12s', '5s') -> seconds."""
+    total = 0.0
+    for value, unit in re.findall(r"(\d+)([hms])", dur):
+        total += int(value) * {"h": 3600, "m": 60, "s": 1}[unit]
+    return total
+
+
+# --- run time (libresplit) ------------------------------------------------
+
+def latest_run_file(runs_dir: Path) -> Path | None:
+    runs = sorted(runs_dir.glob("run_*.json"), key=lambda p: p.stat().st_mtime)
+    return runs[-1] if runs else None
+
+
+def get_run_time(cfg: dict) -> tuple[float, str, Path | None]:
+    """Return (seconds, source label, run_file). Last finished run, else PB."""
+    run_file = latest_run_file(cfg["runs_dir"])
+    if run_file:
+        data = json.loads(run_file.read_text())
+        reason = data.get("reason")
+        if reason == "FINISHED" and data.get("final_time"):
+            return parse_time(data["final_time"]), "last run", run_file
+        log.info("latest run was %s, not FINISHED; falling back to PB", reason)
+
+    splits = json.loads(cfg["splits_file"].read_text())
+    pb = splits["splits"][-1].get("best_time")
+    if not pb:
+        sys.exit("No finished run and no PB time in splits file.")
+    return parse_time(pb), "PB", run_file
+
+
+# --- save upload (rclone) -------------------------------------------------
+
+def latest_save(save_dir: Path) -> Path:
+    saves = sorted(save_dir.glob("*.zip"), key=lambda p: p.stat().st_mtime)
+    if not saves:
+        sys.exit(f"No saves found in {save_dir}")
+    return saves[-1]
+
+
+def upload_save(cfg: dict) -> str:
+    """Upload latest save to Drive; return a public link or the drive path."""
+    save = latest_save(cfg["save_dir"])
+    dest = f"{cfg['gdrive_folder']}/{save.name}"
+    log.info("uploading %s -> %s", save.name, dest)
+    subprocess.run(["rclone", "copyto", str(save), dest], check=True)
+    try:
+        link = subprocess.run(
+            ["rclone", "link", dest], check=True, capture_output=True, text=True
+        ).stdout.strip()
+        return link or dest
+    except subprocess.CalledProcessError as e:
+        log.warning("rclone link failed (%s); reporting drive path", e)
+        return dest
+
+
+# --- twitch ---------------------------------------------------------------
+
+def load_twitch_config() -> dict | None:
+    if not CONFIG_PATH.exists():
+        log.warning("no %s; skipping Twitch", CONFIG_PATH)
+        return None
+    tw = json.loads(CONFIG_PATH.read_text()).get("twitch", {})
+    if not tw.get("client_id") or not tw.get("client_secret"):
+        log.warning("Twitch client_id/client_secret missing in config; skipping")
+        return None
+    return tw
+
+
+def _http_json(url: str, *, data: bytes | None = None, headers: dict | None = None) -> dict:
+    req = urllib.request.Request(url, data=data, headers=headers or {})
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return json.load(resp)
+
+
+def get_latest_vod(tw: dict) -> dict | None:
+    """Return latest archive VOD dict (id, url, created_at, duration) or None."""
+    token = _http_json(
+        "https://id.twitch.tv/oauth2/token",
+        data=urllib.parse.urlencode(
+            {
+                "client_id": tw["client_id"],
+                "client_secret": tw["client_secret"],
+                "grant_type": "client_credentials",
+            }
+        ).encode(),
+    )["access_token"]
+    auth = {"Client-Id": tw["client_id"], "Authorization": f"Bearer {token}"}
+
+    login = tw.get("login", "glassbricks")
+    users = _http_json(
+        f"https://api.twitch.tv/helix/users?login={login}", headers=auth
+    )["data"]
+    if not users:
+        log.warning("Twitch user %s not found", login)
+        return None
+    user_id = users[0]["id"]
+
+    videos = _http_json(
+        f"https://api.twitch.tv/helix/videos?user_id={user_id}&type=archive&first=1",
+        headers=auth,
+    )["data"]
+    if not videos:
+        log.warning("no archive VODs for %s (is 'Store past broadcasts' on?)", login)
+        return None
+    return videos[0]
+
+
+def vod_start_offset(vod: dict, run_file: Path | None, run_seconds: float,
+                     override: float | None) -> float | None:
+    """Estimate seconds into the VOD where the run started.
+
+    libresplit writes the run file at finish (attempt_started is null), so
+    run_start ~= run_file_mtime - duration. offset = run_start - vod_created_at.
+    """
+    if override is not None:
+        return override
+    if run_file is None:
+        return None
+    run_start = run_file.stat().st_mtime - run_seconds
+    vod_created = datetime.fromisoformat(
+        vod["created_at"].replace("Z", "+00:00")
+    ).timestamp()
+    offset = run_start - vod_created
+    duration = parse_twitch_duration(vod["duration"])
+    if not 0 <= offset <= duration:
+        log.warning("computed VOD offset %.0fs outside [0, %.0fs]; not jumping",
+                    offset, duration)
+        return None
+    return max(0.0, offset - VOD_LEAD)
+
+
+# --- output ---------------------------------------------------------------
+
+def open_browser(url: str) -> None:
+    try:
+        subprocess.Popen(
+            ["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+    except OSError as e:
+        log.warning("could not open browser: %s", e)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Assemble a speedrun.com submission.")
+    ap.add_argument("category", nargs="?", default=DEFAULT_CATEGORY,
+                    choices=list(CATEGORIES))
+    ap.add_argument("--no-upload", action="store_true", help="skip Drive upload")
+    ap.add_argument("--no-twitch", action="store_true", help="skip Twitch VOD lookup")
+    ap.add_argument("--vod-offset", type=float, metavar="SECONDS",
+                    help="override the VOD start guess")
+    ap.add_argument("-v", "--verbose", action="store_true")
+    args = ap.parse_args()
+
+    logging.basicConfig(
+        level=logging.INFO if args.verbose else logging.WARNING,
+        format="%(levelname)s %(message)s",
+    )
+    cfg = CATEGORIES[args.category]
+
+    # Print each line as soon as it is known: the time and links are instant,
+    # the Drive link waits on the upload, the VOD on the Twitch round-trip.
+    def emit(line: str) -> None:
+        print(line, flush=True)
+
+    run_seconds, source, run_file = get_run_time(cfg)
+    emit("")
+    emit(f"=== {cfg['display']} ===")
+    if cfg.get("show_ms", True):
+        emit(f"Time:         {format_time(run_seconds)}   (source: {source})")
+    else:
+        emit(f"Time:         {format_time(run_seconds, ms=False)}"
+             f"   (source: {source}; exact {format_time(run_seconds)})")
+    emit(f"Submit:       {cfg['src_url']}")
+
+    if not args.no_upload:
+        emit(f"Save (Drive): {upload_save(cfg)}")
+
+    if not args.no_twitch:
+        tw = load_twitch_config()
+        vod = get_latest_vod(tw) if tw else None
+        if not vod:
+            emit("VOD:          (TODO: no VOD; see setup in --help)")
+            return
+        login = tw.get("login", "glassbricks")
+        offset = vod_start_offset(vod, run_file, run_seconds, args.vod_offset)
+        if offset is not None:
+            emit(f"VOD:          {vod['url']}?t={format_offset(offset)}"
+                 f"   (start ~{format_time(offset, ms=False)})")
+        else:
+            emit(f"VOD:          {vod['url']}")
+        emit(f"Highlighter:  https://dashboard.twitch.tv/u/{login}"
+             f"/content/video-producer/highlighter/{vod['id']}")
+        # Open the video producer (highlight workflow lands here, not the watch page).
+        open_browser(f"https://dashboard.twitch.tv/u/{login}/content/video-producer")
+
+
+if __name__ == "__main__":
+    main()

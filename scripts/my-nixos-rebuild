@@ -47,6 +47,7 @@ parser.add_argument("-n", "--nixos", action="store_true", help="force nixos rebu
 parser.add_argument("-H", "--home", action="store_true", help="force home-manager rebuild")
 parser.add_argument("-m", "--message", help="commit message (skip prompt)")
 parser.add_argument("-g", "--generate", action="store_true", help="generate commit message with claude (skip prompt)")
+parser.add_argument("-C", "--no-commit", action="store_true", help="skip commit/push; just git add + rebuild")
 args = parser.parse_args()
 
 run("git add .")
@@ -79,7 +80,7 @@ print("update nixos:", should_update_nixos)
 print("update home:", should_update_home)
 
 # Resolve the commit message up front so the long build runs unattended.
-if has_changes:
+if has_changes and not args.no_commit:
     if args.message is not None:
         commit_msg = args.message
     elif args.generate:
@@ -106,7 +107,7 @@ if should_update_nixos:
 if should_update_home:
     run("./hm-result/activate")
 
-if has_changes:
+if has_changes and not args.no_commit:
     if commit_msg:
         subprocess.run(["git", "commit", "-m", commit_msg], check=True)
     else:
