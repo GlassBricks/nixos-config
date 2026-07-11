@@ -10,6 +10,8 @@
   programs.neovim = {
     enable = true;
     defaultEditor = false;
+    withPython3 = false;
+    withRuby = false;
   };
   programs.java.enable = true;
 

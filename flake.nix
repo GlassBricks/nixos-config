@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     # nixpkgs-unstable channel (vs nixos-unstable): same tree, lighter
     # Hydra gating, typically 1-2 days fresher. Used via the
     # 'unstable-packages' overlay at 'overlays/default.nix'.
@@ -10,7 +10,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -19,11 +19,6 @@
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    zed-editor = {
-      url = "github:zed-industries/zed/v0.233.5";
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
