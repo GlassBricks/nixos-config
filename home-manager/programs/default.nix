@@ -118,7 +118,6 @@
     ollama-rocm
 
     unstable.zed-editor
-    unstable.jetbrains-toolbox
     unstable.worktrunk
   ];
 
