@@ -135,6 +135,7 @@
       "stable" = {
         installDir = "opt/factorio-stable";
         executableName = "factorio-stable";
+        linkCommon = [];
       };
       "1.1" = {
         displayName = "1.1";

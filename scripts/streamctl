@@ -55,6 +55,10 @@ BG_CMD        = "./factorio-preview-toolkit"
 # other factorio instances are not caught by spawn/kill.
 FACTORIO_BIN  = "factorio-stable"
 FACTORIO_PAT  = r"opt/factorio-stable/bin/x64/factorio"
+# mod-list.json in the stable instance dir (see the factorio-stable launcher). On
+# launch we rewrite it so only the stream loadout is enabled.
+FACTORIO_MOD_LIST = HOME / ".factorio/instances/stable/mods/mod-list.json"
+FACTORIO_STREAM_MODS = ["base", "space-age", "quality", "elevated-rails"]
 
 # Stream firefox runs in its own profile + process so it never merges with, or
 # closes, personal browsing. Wayland firefox ignores --class for the WM (windows
@@ -283,8 +287,27 @@ def stream_targets() -> list[dict]:
     return [{**t, "pids": pids} if t.get("streamFf") else t for t in TARGETS]
 
 
+def set_stream_mods() -> None:
+    """Rewrite the stable instance's mod-list.json so only the stream loadout
+    (FACTORIO_STREAM_MODS) is enabled, leaving every other mod disabled."""
+    enable = set(FACTORIO_STREAM_MODS)
+    try:
+        data = json.loads(FACTORIO_MOD_LIST.read_text())
+    except (OSError, json.JSONDecodeError) as e:
+        log.warning("mods: skipping mod-list.json (%s)", e)
+        return
+    present = {m["name"] for m in data.get("mods", [])}
+    for m in data["mods"]:
+        m["enabled"] = m["name"] in enable
+    data["mods"].extend({"name": n, "enabled": True}
+                        for n in FACTORIO_STREAM_MODS if n not in present)
+    FACTORIO_MOD_LIST.write_text(json.dumps(data, indent=2) + "\n")
+    log.info("mods: enabled %s", ", ".join(FACTORIO_STREAM_MODS))
+
+
 def launch_factorio() -> None:
     log.info("=== factorio ===")
+    set_stream_mods()
     if _pids(FACTORIO_PAT):
         log.info("running: factorio")
     else:
