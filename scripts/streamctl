@@ -198,10 +198,20 @@ def kwin_shortcut(name: str) -> None:
 
 # --- Geometry -----------------------------------------------------------------
 def get_outputs() -> dict:
+    """Per-output *placeable* area: screen geometry minus reserved panel struts
+    (KWin's MaximizeArea), so windows stop at the taskbar edge instead of running
+    under it. Auto-hide panels reserve nothing, so they stay coverable."""
     js = """
+const desktop = workspace.currentDesktop;
 for (const s of workspace.screens) {
   const g = s.geometry;
-  print('STREAM: OUT ' + JSON.stringify({name: s.name, x: g.x, y: g.y, w: g.width, h: g.height}));
+  const area = workspace.clientArea(KWin.MaximizeArea, s, desktop);
+  const a = (area && area.width > 0 && area.height > 0) ? area : g;
+  const x = Math.ceil(a.x), y = Math.ceil(a.y);
+  print('STREAM: OUT ' + JSON.stringify({
+    name: s.name, x: x, y: y,
+    w: Math.floor(a.x + a.width) - x, h: Math.floor(a.y + a.height) - y,
+  }));
 }
 """
     out: dict = {}
@@ -491,7 +501,7 @@ def place_phase() -> bool:
     log.info("=== place ===")
     outputs = get_outputs()
     for name, g in outputs.items():
-        log.info("  output %s: %dx%d @ (%d,%d)", name, g["w"], g["h"], g["x"], g["y"])
+        log.info("  output %s: usable %dx%d @ (%d,%d)", name, g["w"], g["h"], g["x"], g["y"])
     if OUT1 not in outputs or OUT3 not in outputs:
         log.error("missing output: need %s & %s, have %s", OUT1, OUT3, list(outputs))
         return False
