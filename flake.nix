@@ -1,9 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
-    # nixpkgs-unstable channel (vs nixos-unstable): same tree, lighter
-    # Hydra gating, typically 1-2 days fresher. Used via the
-    # 'unstable-packages' overlay at 'overlays/default.nix'.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
@@ -29,7 +26,6 @@
     ...
   } @ inputs: let
     inherit (self) outputs;
-    # Supported systems for your flake packages, shell, etc.
     systems = [
       #      "aarch64-linux"
       #      "i686-linux"

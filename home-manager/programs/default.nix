@@ -86,6 +86,7 @@
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
+    kdePackages.kolourpaint
     haruna
     okteta
 
@@ -139,6 +140,13 @@
         installDir = "opt/factorio-stable";
         executableName = "factorio-stable";
         linkCommon = [];
+      };
+      "stable-planning" = {
+        displayName = "Stable Planning";
+        installDir = "opt/factorio-stable";
+        linkCommon = [];
+        links.saves = ".factorio/instances/planning/saves";
+        executableName = "factorio-planning-stable";
       };
       "1.1" = {
         displayName = "1.1";
