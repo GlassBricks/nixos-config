@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+import argparse
+import sys
+
+from nixos_common import (
+    commit_and_push,
+    rebuild,
+    resolve_commit_message,
+    run,
+    setup_env,
+    staged_files,
+)
+
+setup_env()
+
+parser = argparse.ArgumentParser(description="Update flake inputs, rebuild, commit the lockfile.")
+parser.add_argument("-m", "--message", help="commit message")
+parser.add_argument("-g", "--generate", action="store_true", help="generate commit message with claude")
+parser.add_argument("-C", "--no-commit", action="store_true", help="skip commit/push; just update + rebuild")
+args = parser.parse_args()
+
+run("nix flake update")
+run("git add flake.lock")
+
+if "flake.lock" not in staged_files():
+    print("Flake inputs already up to date.")
+    sys.exit(0)
+
+should_commit = not args.no_commit
+
+# Resolve the commit message up front so the long build runs unattended.
+if should_commit:
+    commit_msg = resolve_commit_message(args.message, args.generate, default="Update flake inputs")
+
+rebuild(True, True)
+
+if should_commit:
+    commit_and_push(commit_msg, paths=["flake.lock"])

@@ -73,6 +73,8 @@
     gh
     ffmpeg
 
+    busybox
+
     # --- desktop / gui ---
     piper
     gparted
@@ -98,7 +100,7 @@
     unstable.libresplit
     prismlauncher
 
-    # --- hardware / peripherals ---
+    # --- qmk ---
     qmk
     gcc-arm-embedded
 
@@ -119,7 +121,6 @@
     wild
 
     graphviz
-    ollama-rocm
 
     unstable.zed-editor
     unstable.worktrunk

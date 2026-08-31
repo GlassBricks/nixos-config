@@ -8,6 +8,7 @@
   scripts = [
     "krohnkite-on"
     "libresplit-reset-restart"
+    "my-flake-update"
     "my-nixos-rebuild"
     "nix-autobahn-find-libs"
     "speedrun-submit"

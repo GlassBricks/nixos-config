@@ -223,8 +223,7 @@
     fuse
     fuse3
     gdk-pixbuf
-    glew110
-    glib
+    glew_1_10    glib
     gmp
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-ugly

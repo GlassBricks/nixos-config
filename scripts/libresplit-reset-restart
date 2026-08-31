@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Left-click at the cursor, reset the run, then (after a short delay) start it.
+# Click the LibreSplit window, reset the run, restart it, then park the cursor.
 # Bound to a KDE global shortcut only while LibreSplit hotkeys are enabled
 # (see `streamctl keys` / `streamctl nokeys`).
 set -eu
@@ -8,11 +8,32 @@ set -eu
 export YDOTOOL_SOCKET
 
 ctl=/home/ben/.nix-profile/bin/libresplit-ctl
-delay="${LIBRESPLIT_RESTART_DELAY:-0.01}"
+delay="${LIBRESPLIT_RESTART_DELAY:-0.001}"
+click_x="${LIBRESPLIT_CLICK_X:-2952}"
+click_y="${LIBRESPLIT_CLICK_Y:-63}"
+park_x="${LIBRESPLIT_PARK_X:-5157}"
+park_y="${LIBRESPLIT_PARK_Y:-421}"
 
-ydotool click 0xC0      # left press+release at current cursor position
+# ydotool only emits relative motion, so absolute positioning means slamming the
+# cursor into the top-left corner first, then moving by the target offset. Both
+# steps are only exact with kwinrc [EdgeBarrier] EdgeBarrier=0; otherwise KWin
+# stops motion at each screen boundary and eats part of the delta.
+CORNER_X=1              # where a corner slam actually lands
+CORNER_Y=9
+SLAM=20000              # larger than the virtual desktop in either direction
+
+move_to() {
+    ydotool mousemove -x -$SLAM -y -$SLAM
+    sleep "$delay"
+    ydotool mousemove -x $(($1 - CORNER_X)) -y $(($2 - CORNER_Y))
+    sleep "$delay"
+}
+
+
 "$ctl" stoporreset
-sleep "$delay"
+move_to "$click_x" "$click_y"
 "$ctl" cancel
-sleep "$delay"
+ydotool click 0xC0      # left press+release
 "$ctl" startorsplit
+
+# move_to "$park_x" "$park_y"
