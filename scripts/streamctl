@@ -269,7 +269,7 @@ def compute_rects(outputs: dict) -> dict:
         return (o["x"], o["y"], o["w"], o["h"])
 
     o1, o3 = outputs[OUT1], outputs[OUT3]
-    gw, chat, ff1 = _cols(rect(o1), 30, 30, 40)
+    gw, ff1, chat = _cols(rect(o1), 30, 35, 35)
     obs, side = _cols(rect(o3), OBS_WIDTH_PCT, -100)
     vesk, ff3 = _rows(side, 1, 2)
     kit = (o3["x"], o3["y"] + o3["h"] - KIT_H, KIT_W, KIT_H)
