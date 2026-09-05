@@ -70,10 +70,11 @@ with lib; let
     shift
 
     export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
-    export MIMALLOC_RESERVE_HUGE_OS_PAGES=0
-    export MIMALLOC_EAGER_COMMIT_DELAY=4
+    # 1GB huge pages: needs kernelParams in configuration.nix; don't combine
+    # with ALLOW_LARGE above.
+    # export MIMALLOC_RESERVE_HUGE_OS_PAGES=8
+    export MIMALLOC_PURGE_DELAY=10000
     export MIMALLOC_SHOW_STATS=0
-    export MALLOC_ARENA_MAX=1
     export LD_PRELOAD="$LD_PRELOAD ${pkgs.mimalloc}/lib/libmimalloc.so"
 
     exec $FACTORIO_BINARY "$@"
@@ -90,7 +91,7 @@ with lib; let
       sed -i "s|^write-data=.*|write-data=$WRITE_PATH|" $CONFIG_FILE
     fi
 
-    exec ${optimizationWrapper} "$FACTORIO_PATH/bin/x64/factorio" -c "$CONFIG_FILE" "$@"
+    exec ${pkgs.gamemode}/bin/gamemoderun ${optimizationWrapper} "$FACTORIO_PATH/bin/x64/factorio" -c "$CONFIG_FILE" "$@"
   '';
   configTemplate = ''
     [path]

@@ -84,6 +84,14 @@
     efi.canTouchEfiVariables = true;
   };
 
+  # 1GB huge pages for Factorio: reserves 10GB at boot. Enable alongside
+  # MIMALLOC_RESERVE_HUGE_OS_PAGES in custom-factorio.nix.
+  # boot.kernelParams = [
+  #   "default_hugepagesz=1G"
+  #   "hugepagesz=1G"
+  #   "hugepages=10"
+  # ];
+
   networking = {
     hostName = "nixos";
     networkmanager = {
@@ -179,6 +187,8 @@
   hardware.openrazer.enable = true;
   programs.dconf.enable = true;
 
+  programs.gamemode.enable = true;
+
   system.activationScripts.binbash = {
     deps = ["binsh"];
     text = ''
@@ -223,7 +233,8 @@
     fuse
     fuse3
     gdk-pixbuf
-    glew_1_10    glib
+    glew_1_10
+    glib
     gmp
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-ugly
