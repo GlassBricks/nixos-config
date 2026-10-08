@@ -73,7 +73,7 @@
     gh
     ffmpeg
 
-    busybox
+    (busybox.override {enableAppletSymlinks = false;})
 
     # --- desktop / gui ---
     piper

@@ -49,6 +49,9 @@ else:
 print("update nixos:", should_update_nixos)
 print("update home:", should_update_home)
 
+if should_update_nixos:
+    run("sudo -v")
+
 should_commit = changed_files and not args.no_commit
 
 # Resolve the commit message up front so the long build runs unattended.

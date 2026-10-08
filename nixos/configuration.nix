@@ -19,6 +19,7 @@
 
     # You can also split up your configuration and import pieces of it here:
     # ./users.nix
+    ./bedtime.nix
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
@@ -80,7 +81,11 @@
 
   # Bootloader
   boot.loader = {
-    systemd-boot.enable = true;
+    systemd-boot = {
+      enable = true;
+      # 511M ESP fits ~6 generations of kernel + 62M initrd
+      configurationLimit = 4;
+    };
     efi.canTouchEfiVariables = true;
   };
 

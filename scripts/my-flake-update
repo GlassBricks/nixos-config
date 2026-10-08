@@ -19,6 +19,7 @@ parser.add_argument("-g", "--generate", action="store_true", help="generate comm
 parser.add_argument("-C", "--no-commit", action="store_true", help="skip commit/push; just update + rebuild")
 args = parser.parse_args()
 
+run("sudo -v")
 run("nix flake update")
 run("git add flake.lock")
 
