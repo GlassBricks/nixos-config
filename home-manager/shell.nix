@@ -50,7 +50,7 @@ in {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:$HOME/go/bin:$HOME/.local/share/JetBrains/Toolbox/scripts"
+      export PATH="$PATH:$HOME/go/bin
     '';
     initExtra = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
@@ -111,7 +111,7 @@ in {
       "ctrl+shift+right" = "neighboring_window right";
       "ctrl+shift+up" = "neighboring_window up";
       "ctrl+shift+down" = "neighboring_window down";
-      "ctrl+shift+enter" = "new_window";
+      "ctrl+shift+enter" = "launch --cwd=current";
       "ctrl+alt+right" = "launch --location=vsplit --cwd=current";
       "ctrl+alt+down" = "launch --location=hsplit --cwd=current";
       "ctrl+alt+shift+left" = "previous_tab";
