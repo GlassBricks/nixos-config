@@ -3,7 +3,7 @@
   lib,
   fetchurl,
   makeDesktopItem,
-  wrapGAppsHook,
+  wrapGAppsHook3,
   glib,
   webkitgtk_4_1,
   imagemagick,
@@ -35,7 +35,7 @@ in
     nativeBuildInputs = [
       autoPatchelfHook
       imagemagick
-      wrapGAppsHook
+      wrapGAppsHook3
     ];
 
     buildInputs = [

@@ -7,13 +7,13 @@
     ./libresplit.nix
   ];
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = false;
-    withPython3 = false;
-    withRuby = false;
-  };
-  programs.java.enable = true;
+  # programs.neovim = {
+  #   enable = true;
+  #   defaultEditor = false;
+  #   withPython3 = false;
+  #   withRuby = false;
+  # };
+  # programs.java.enable = true;
 
   programs.obs-studio = {
     enable = true;
@@ -37,8 +37,8 @@
     wl-clipboard
     wtype
     wayland-utils
-    kwin-mcp
-    pdf2md
+    # kwin-mcp
+    # pdf2md
 
     killall
     file
@@ -58,10 +58,10 @@
     unzip
 
     btop
-    gitui
+    # gitui
     delta
     hyperfine
-    dua
+    # dua
     tokei
     kondo
 
@@ -76,11 +76,11 @@
     (busybox.override {enableAppletSymlinks = false;})
 
     # --- desktop / gui ---
-    piper
+    # piper
     gparted
-    qbittorrent-enhanced
+    # qbittorrent-enhanced
     unstable.obsidian
-    handbrake
+    # handbrake
 
     kdePackages.dragon
     kdePackages.kconfig
@@ -88,7 +88,7 @@
     kdePackages.ktimer
     kdePackages.kcalc
     kdePackages.kalgebra
-    kdePackages.kolourpaint
+    # kdePackages.kolourpaint
     haruna
     okteta
 
@@ -100,9 +100,8 @@
     unstable.libresplit
     prismlauncher
 
-    # --- qmk ---
-    qmk
-    gcc-arm-embedded
+    # qmk
+    # gcc-arm-embedded
 
     # --- development ---
     nodejs_24
@@ -110,14 +109,14 @@
     bun
 
     python313
-    python313Packages.tkinter
-    python313Packages.numpy
+    # python313Packages.tkinter
+    # python313Packages.numpy
     uv
 
     rustup
 
     pkg-config
-    mold
+    # mold
     wild
 
     graphviz
