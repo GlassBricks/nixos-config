@@ -39,6 +39,7 @@
     wayland-utils
     # kwin-mcp
     # pdf2md
+    ticket
 
     killall
     file
@@ -77,7 +78,7 @@
 
     # --- desktop / gui ---
     # piper
-    gparted
+    unstable.gparted
     # qbittorrent-enhanced
     unstable.obsidian
     # handbrake
