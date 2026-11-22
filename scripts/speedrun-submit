@@ -44,9 +44,9 @@ VOD_LEAD = 15  # seconds of slack before the computed run start, to land just ea
 CATEGORIES = {
     "RSNG+": {
         "display": "Factorio: Space Age - RSNG+",
-        "save_dir": HOME / ".factorio/instances/default/saves/RSNG+",
+        "save_dir": HOME / ".factorio/instances/stable/saves/RSNG+",
         "splits_file": HOME / ".config/libresplit/splits/RSNG+/RSNG+.json",
-        "runs_dir": HOME / ".config/libresplit/runs",
+        "runs_dir": HOME / ".config/libresplit/runs/RSNG+",
         "gdrive_folder": "gdrive:factorio saves/RSNG+",
         "src_url": "https://www.speedrun.com/Space_Age/runs/new?h=random-seed-new-game&x=jdzmlwrk",
         "show_ms": False,  # Space_Age leaderboard shows whole seconds; submissions floor
@@ -59,8 +59,11 @@ log = logging.getLogger("speedrun-submit")
 
 # --- time parsing ---------------------------------------------------------
 
-def parse_time(raw: str) -> float:
-    """libresplit time string ('H:MM:SS.ffffff' / 'M:SS.ff' / 'SS.ff') -> seconds."""
+def parse_time(raw: str | dict) -> float:
+    """libresplit time ('H:MM:SS.ffffff' / 'M:SS.ff' / 'SS.ff', or a
+    {real_time, game_time} dict of those) -> seconds."""
+    if isinstance(raw, dict):
+        raw = raw["real_time"]
     parts = raw.split(":")
     seconds = float(parts[-1])
     if len(parts) >= 2:
@@ -101,26 +104,33 @@ def parse_twitch_duration(dur: str) -> float:
 
 # --- run time (libresplit) ------------------------------------------------
 
-def latest_run_file(runs_dir: Path) -> Path | None:
-    runs = sorted(runs_dir.glob("run_*.json"), key=lambda p: p.stat().st_mtime)
-    return runs[-1] if runs else None
+def parse_run_stamp(stamp: str) -> datetime:
+    """libresplit run stamp ('2026-11-22_18-08-12', UTC) -> aware datetime."""
+    return datetime.strptime(stamp, "%Y-%m-%d_%H-%M-%S").replace(tzinfo=timezone.utc)
 
 
-def get_run_time(cfg: dict) -> tuple[float, str, Path | None]:
-    """Return (seconds, source label, run_file). Last finished run, else PB."""
-    run_file = latest_run_file(cfg["runs_dir"])
-    if run_file:
-        data = json.loads(run_file.read_text())
-        reason = data.get("reason")
-        if reason == "FINISHED" and data.get("final_time"):
-            return parse_time(data["final_time"]), "last run", run_file
-        log.info("latest run was %s, not FINISHED; falling back to PB", reason)
+def latest_run(runs_dir: Path) -> dict | None:
+    """Most recent run; runs_dir holds one JSON list of runs per day."""
+    for day_file in sorted(runs_dir.glob("*.json"), reverse=True):
+        runs = json.loads(day_file.read_text())
+        if runs:
+            return max(runs, key=lambda r: r["start_time"])
+    return None
+
+
+def get_run_time(cfg: dict) -> tuple[float, str, datetime | None]:
+    """Return (seconds, source label, run start). Last run if finished, else PB."""
+    run = latest_run(cfg["runs_dir"])
+    if run and run.get("reason") == "FINISHED" and run.get("final_time"):
+        return parse_time(run["final_time"]), "last run", parse_run_stamp(run["start_time"])
+    log.info("latest run was %s, not FINISHED; falling back to PB",
+             run and run.get("reason"))
 
     splits = json.loads(cfg["splits_file"].read_text())
     pb = splits["splits"][-1].get("best_time")
     if not pb:
         sys.exit("No finished run and no PB time in splits file.")
-    return parse_time(pb), "PB", run_file
+    return parse_time(pb), "PB", None
 
 
 # --- save upload (rclone) -------------------------------------------------
@@ -200,22 +210,15 @@ def get_latest_vod(tw: dict) -> dict | None:
     return videos[0]
 
 
-def vod_start_offset(vod: dict, run_file: Path | None, run_seconds: float,
+def vod_start_offset(vod: dict, run_start: datetime | None,
                      override: float | None) -> float | None:
-    """Estimate seconds into the VOD where the run started.
-
-    libresplit writes the run file at finish (attempt_started is null), so
-    run_start ~= run_file_mtime - duration. offset = run_start - vod_created_at.
-    """
+    """Seconds into the VOD where the run started (run_start - vod created_at)."""
     if override is not None:
         return override
-    if run_file is None:
+    if run_start is None:
         return None
-    run_start = run_file.stat().st_mtime - run_seconds
-    vod_created = datetime.fromisoformat(
-        vod["created_at"].replace("Z", "+00:00")
-    ).timestamp()
-    offset = run_start - vod_created
+    vod_created = datetime.fromisoformat(vod["created_at"].replace("Z", "+00:00"))
+    offset = (run_start - vod_created).total_seconds()
     duration = parse_twitch_duration(vod["duration"])
     if not 0 <= offset <= duration:
         log.warning("computed VOD offset %.0fs outside [0, %.0fs]; not jumping",
@@ -257,7 +260,7 @@ def main() -> None:
     def emit(line: str) -> None:
         print(line, flush=True)
 
-    run_seconds, source, run_file = get_run_time(cfg)
+    run_seconds, source, run_start = get_run_time(cfg)
     emit("")
     emit(f"=== {cfg['display']} ===")
     if cfg.get("show_ms", True):
@@ -277,7 +280,7 @@ def main() -> None:
             emit("VOD:          (TODO: no VOD; see setup in --help)")
             return
         login = tw.get("login", "glassbricks")
-        offset = vod_start_offset(vod, run_file, run_seconds, args.vod_offset)
+        offset = vod_start_offset(vod, run_start, args.vod_offset)
         if offset is not None:
             emit(f"VOD:          {vod['url']}?t={format_offset(offset)}"
                  f"   (start ~{format_time(offset, ms=False)})")
